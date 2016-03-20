@@ -5,16 +5,16 @@ Siehe Demo Anwendung für weitere Details.
 
 ## Screenshots
 
-![CMD](docs/000.gif)
+![CMD](doc/000.gif)
 
-![CMD](docs/001.PNG)
+![CMD](doc/001.PNG)
 
-![CMD](docs/002.PNG)
+![CMD](doc/002.PNG)
 
-![CMD](docs/003.PNG)
+![CMD](doc/003.PNG)
 
-![CMD](docs/004.PNG)
+![CMD](doc/004.PNG)
 
-![CMD](docs/005.PNG)
+![CMD](doc/005.PNG)
 
-![CMD](docs/006.PNG)
+![CMD](doc/006.PNG)
