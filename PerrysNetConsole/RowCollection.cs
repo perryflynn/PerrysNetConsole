@@ -9,9 +9,9 @@ namespace PerrysNetConsole
     public class RowCollection
     {
 
-        protected static RowConfSettings defaultsettings;
-        public static RowConfSettings DefaultSettings { 
-            get { if (defaultsettings == null) { defaultsettings = new RowConfSettings(); } return defaultsettings; } 
+        protected static RowCollectionSettings defaultsettings;
+        public static RowCollectionSettings DefaultSettings { 
+            get { if (defaultsettings == null) { defaultsettings = new RowCollectionSettings(); } return defaultsettings; } 
             set { defaultsettings = value; } 
         }
 
@@ -66,7 +66,7 @@ namespace PerrysNetConsole
             return new RowCollection();
         }
 
-        public RowConfSettings Settings { get; set; }
+        public RowCollectionSettings Settings { get; set; }
         public List<RowConf> Items { get; private set; }
         public int Count { get { return this.Items.Count; } }
 

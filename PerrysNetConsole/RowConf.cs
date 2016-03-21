@@ -96,6 +96,13 @@ namespace PerrysNetConsole
             set { this.ishighlightpadding = value; }
         }
 
+        protected Func<RowConf, int, String, RowCollectionSettings.ALIGN?> align;
+        public Func<RowConf, int, String, RowCollectionSettings.ALIGN?> Align
+        {
+            get { return this.align == null && this.Parent != null ? this.Parent.Settings.Align : this.align; }
+            set { this.align = value; }
+        }
+
         public int Index { get { return this.Parent == null ? -1 : this.Parent.Items.IndexOf(this); } }
         public bool IsFirst { get { return this.Index < 1; } }
         public bool IsLast { get { return this.Parent == null ? false : this.Index >= this.Parent.Count - 1; } }

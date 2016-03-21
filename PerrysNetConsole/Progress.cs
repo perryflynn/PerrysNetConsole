@@ -38,7 +38,8 @@ namespace PerrysNetConsole
                 this.Draw();
             }
         }
-        
+
+        public bool IsUsingMessages { get; protected set; }
         public bool IsInitialized { get; protected set; }
         public bool IsRunning { get; protected set; }
 
@@ -55,7 +56,8 @@ namespace PerrysNetConsole
             int fill = (int)Math.Round((barmax * this.Percentage / 100));
 
             String progress = ("".PadLeft(fill, BARPROGRESS));
-            if (this.Percentage > 0 && this.Percentage < 100)
+            
+            if (this.Percentage > 0 && this.Percentage < 100 && progress.Length > 1)
             {
                 progress = progress.Substring(0, progress.Length - 1) + BARPROGRESSTIP;
             }
@@ -64,11 +66,15 @@ namespace PerrysNetConsole
             
             if (this.IsInitialized)
             {
-                CoEx.Seek(0, -2);
+                CoEx.Seek(0, (this.IsUsingMessages ? -2 : -1));
+            }
+            
+            if (this.IsUsingMessages)
+            {
+                CoEx.WriteLine();
             }
             
             this.IsInitialized = true;
-            CoEx.WriteLine();
             CoEx.WriteLine(percstr + BARBEGIN + barcontent + BAREND);
         }
 
@@ -82,11 +88,16 @@ namespace PerrysNetConsole
         {
             if (this.IsInitialized)
             {
-                CoEx.Seek(0, -2);
+                CoEx.Seek(0, (this.IsUsingMessages ? -2 : -1));
                 CoEx.WriteLine("".PadLeft(CoEx.Width, ' '));
-                CoEx.WriteLine("".PadLeft(CoEx.Width, ' '));
-                CoEx.Seek(0, -2);
+                if (this.IsUsingMessages)
+                {
+                    CoEx.WriteLine("".PadLeft(CoEx.Width, ' '));
+                }
+                CoEx.Seek(0, (this.IsUsingMessages ? -2 : -1));
             }
+
+            this.IsUsingMessages = true;
 
             String level = "";
             ConsoleColor color = ConsoleColor.Gray;

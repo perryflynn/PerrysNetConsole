@@ -44,7 +44,26 @@ namespace Demo
 
 
             /**
-             * Progress Bar
+             * Simple Progress Bar
+             */
+            CoEx.WriteLine();
+            CoEx.WriteTitle("Simple Progressbar");
+            CoEx.WriteLine();
+            
+            Progress simpr = new Progress();
+
+            while (simpr.Percentage < 100)
+            {
+                simpr.Percentage += 0.5;
+                System.Threading.Thread.Sleep(15);
+            }
+
+            System.Threading.Thread.Sleep(1000);
+            CoEx.Clear();
+
+
+            /**
+             * Progress Bar with Log
              */
             Tuple<Progress.LEVEL, String>[] states = new Tuple<Progress.LEVEL, String>[]
             {
@@ -267,6 +286,27 @@ namespace Demo
 
             CoEx.WriteLine();
             CoEx.WriteTitle("Background color based on hours value");
+            CoEx.WriteTable(rc2);
+
+            Continue();
+
+
+            /**
+             * Column alignment
+             */
+            rc2.Settings.Align = delegate(RowConf me, int colindex, String s)
+            {
+                switch (colindex)
+                {
+                    case 0: return RowCollectionSettings.ALIGN.RIGHT;
+                    case 1: return null;
+                    case 2: case 3: return RowCollectionSettings.ALIGN.CENTER;
+                    default: return RowCollectionSettings.ALIGN.LEFT;
+                }
+            };
+            
+            CoEx.WriteLine();
+            CoEx.WriteTitle("Column alignment");
             CoEx.WriteTable(rc2);
 
 

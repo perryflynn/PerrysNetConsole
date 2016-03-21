@@ -68,6 +68,16 @@ namespace PerrysNetConsole
             }
         }
 
+        public static void SetColor(RowConf cfg, int column, String content)
+        {
+            if (cfg.IsColorize == null || cfg.IsColorize(cfg, column, content))
+            {
+                ConsoleColor? bg = cfg.BackgroundColor == null ? null : cfg.BackgroundColor(cfg, column, content);
+                ConsoleColor? fg = cfg.ForegroundColor == null ? null : cfg.ForegroundColor(cfg, column, content);
+                SetColor(bg, fg);
+            }
+        }
+
         public static void Write(String format, params String[] args)
         {
             Console.Write(format, args);
@@ -131,25 +141,41 @@ namespace PerrysNetConsole
 
                 for (int i = 0; i < sublines.Length; i++)
                 {
-                    ResetColor();
                     String item = (sublines[i].Length > j ? sublines[i][j] : "");
-
-                    if (cfg.IsColorize == null || cfg.IsColorize(cfg, i, item))
-                    {
-                        ConsoleColor? bg = cfg.BackgroundColor == null ? null : cfg.BackgroundColor(cfg, i, item);
-                        ConsoleColor? fg = cfg.ForegroundColor == null ? null : cfg.ForegroundColor(cfg, i, item);
-                        SetColor(bg, fg);
-                    }
-
-                    Write(item);
-
-                    if (cfg.IsHighlightPadding == null || !cfg.IsHighlightPadding(cfg, i, item))
-                    {
-                        ResetColor();
-                    }
-
-                    Write("".PadRight(cfg.Length.Items[i].Length - item.Length, ' '));
+                    int padlen = cfg.Length.Items[i].Length - item.Length;
+                    String pad = "".PadRight(padlen, ' ');
+                    bool hlpadding = cfg.IsHighlightPadding != null && cfg.IsHighlightPadding(cfg, i, item);
+                    RowCollectionSettings.ALIGN align = (cfg.Align == null ? null : cfg.Align(cfg, i, item)) ?? RowCollectionSettings.ALIGN.LEFT;
                     
+                    ResetColor();
+
+                    if (align == RowCollectionSettings.ALIGN.RIGHT)
+                    {
+                        if (hlpadding) { SetColor(cfg, i, item); }
+                        Write(pad);
+                        SetColor(cfg, i, item);
+                        Write(item);
+                    }
+                    else if (align == RowCollectionSettings.ALIGN.CENTER)
+                    {
+                        int before = (int)((0.0 + padlen) / 2.0);
+                        int after = (int)Math.Ceiling(((0.0 + padlen) / 2.0));
+
+                        if (hlpadding) { SetColor(cfg, i, item); }
+                        Write("".PadLeft(before, ' '));
+                        SetColor(cfg, i, item);
+                        Write(item);
+                        if (!hlpadding) { ResetColor(); }
+                        Write("".PadLeft(after, ' '));
+                    }
+                    else
+                    {
+                        SetColor(cfg, i, item);
+                        Write(item);
+                        if (!hlpadding) { ResetColor(); }
+                        Write(pad);
+                    }
+
                     ResetColor();
 
                     if (cfg.Border.Enabled)
