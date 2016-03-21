@@ -12,7 +12,6 @@ namespace Demo
         static void Main(string[] args)
         {
 
-            Console.WindowTop = 0;
             Console.WindowHeight = Console.LargestWindowHeight / 2;
             
 
