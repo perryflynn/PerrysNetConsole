@@ -4,7 +4,9 @@ A collection of C# classes to create fancy console applications.
 - Progressbar / Progressbar with status messages
 - Loading indicator
 - Grid system for text output
+- Automatic text wrapping inside of grid columns
 - Tables
+- Bordered tables
 - Dynamic coloring and alignment with delegates
 
 ## Demo
@@ -20,3 +22,5 @@ The code includes a demo application.
 - Add `PerrysNetConsole` as reference to `Demo`
 - Set `Demo` as startup project
 - Run Demo
+
+See [the demo application](./Demo/Program.cs) for more details.
