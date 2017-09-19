@@ -9,6 +9,14 @@ A collection of C# classes to create fancy console applications.
 - Bordered tables
 - Dynamic coloring and alignment with delegates
 
+## Install with nuget
+
+```
+Install-Package PerrysNetConsole
+```
+
+[nuget package site](https://www.nuget.org/packages/PerrysNetConsole/1.0.0)
+
 ## Demo
 
 ![Demo image](./doc/Demo-2017-09-18%2019-56.gif)
