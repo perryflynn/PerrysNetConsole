@@ -39,17 +39,35 @@ namespace PerrysNetConsole
             }
         }
 
+        public int StartY { get; protected set; }
         public bool IsUsingMessages { get; protected set; }
         public bool IsInitialized { get; protected set; }
         public bool IsRunning { get; protected set; }
 
         public Progress()
         {
-            this.Percentage = 0;
+            this.percentage = 0;
+        }
+
+        public void Start()
+        {
+            this.StartY = CoEx.CursorY;
+            this.IsRunning = true;
+            this.Draw();
+        }
+
+        public void Clear()
+        {
+            CoEx.Seek(0, this.StartY, true);
         }
 
         protected void Draw()
         {
+            if (!this.IsRunning)
+            {
+                throw new Exception("Please run Start() first");
+            }
+
             String percstr = String.Format(PERCFORMAT, this.Percentage);
             
             int barmax = CoEx.Width - percstr.Length - BARBEGIN.Length - BAREND.Length-1;
@@ -78,14 +96,13 @@ namespace PerrysNetConsole
             CoEx.WriteLine(percstr + BARBEGIN + barcontent + BAREND);
         }
 
-        public void Start()
-        {
-            this.IsRunning = true;
-            this.Draw();
-        }
-
         public void Message(LEVEL lvl, String msg)
         {
+            if (!this.IsRunning)
+            {
+                throw new Exception("Please run Start() first");
+            }
+
             if (this.IsInitialized)
             {
                 CoEx.Seek(0, (this.IsUsingMessages ? -2 : -1));
@@ -145,17 +162,17 @@ namespace PerrysNetConsole
             this.Percentage = perc;
         }
 
-        public void Update(int current, int max)
+        public void Update(long current, long max)
         {
             this.Percentage = 100 * (0.0 + current) / (0.0 + max);
         }
 
-        public void Update(int current, int max, String msg)
+        public void Update(long current, long max, String msg)
         {
             this.Update(current, max, LEVEL.INFO, msg);
         }
 
-        public void Update(int current, int max, LEVEL lvl, String msg)
+        public void Update(long current, long max, LEVEL lvl, String msg)
         {
             if(!String.IsNullOrEmpty(msg))
             {

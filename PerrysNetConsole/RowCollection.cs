@@ -30,6 +30,11 @@ namespace PerrysNetConsole
             return Create(data.ToArray());
         }
 
+        public static RowCollection Create(String[] data)
+        {
+            return Create(data.Select(v => new String[] { v }).ToArray());
+        }
+
         public static RowCollection Create(RowConf header, params RowConf[] data)
         {
             var c = new RowCollection();
@@ -94,6 +99,11 @@ namespace PerrysNetConsole
 
         public RowCollection Clone()
         {
+            return this.Clone(true);
+        }
+
+        public RowCollection Clone(bool includeitems)
+        {
             var c = new RowCollection()
             {
                 Settings = this.Settings,
@@ -101,7 +111,10 @@ namespace PerrysNetConsole
                 IsCustomLength = this.IsCustomLength
             };
 
-            this.Items.ForEach(v => c.Import(v.Clone(false)));
+            if (includeitems)
+            {
+                this.Items.ForEach(v => c.Import(v.Clone(false)));
+            }
 
             return c;
         }

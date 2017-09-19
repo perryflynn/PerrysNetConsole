@@ -12,8 +12,8 @@ namespace Demo
         static void Main(string[] args)
         {
 
-            Console.WindowHeight = Console.LargestWindowHeight / 2;
-            
+            Console.WindowHeight = Console.LargestWindowHeight - 10;
+
 
             /**
              * Example Data
@@ -43,13 +43,52 @@ namespace Demo
 
 
             /**
+             * Prompt
+             */
+            Prompt prompt = new Prompt()
+            {
+                AllowEmpty = false,
+                Prefix = "Choose your choice",
+                Default = "okay",
+                ValidateChoices = true,
+                ChoicesText = new Dictionary<string, string>() {
+                    { "yes", "Yea, lets go" },
+                    { "sure", "Sure, why not" },
+                    { "okay", "Okay, go for it" },
+                    { "yay", "Yay, kay, thx, bye" }
+                }
+            };
+
+            CoEx.WriteTitleLarge("Welcome, lets get started with a basic prompt");
+            CoEx.WriteLine();
+
+            prompt.DoPrompt();
+
+            CoEx.Clear();
+
+
+            /**
+             * Load indicator
+             */
+            CoEx.WriteTitleLarge("Loading indicator");
+            CoEx.WriteLine();
+
+            LoadIndicator indicator = new LoadIndicator() { Message = "Load the awesomeness" };
+            indicator.Start();
+            System.Threading.Thread.Sleep(5000);
+            indicator.Stop();
+
+            CoEx.Clear();
+
+
+            /**
              * Simple Progress Bar
              */
-            CoEx.WriteLine();
-            CoEx.WriteTitle("Simple Progressbar");
+            CoEx.WriteTitleLarge("Simple Progressbar");
             CoEx.WriteLine();
             
             Progress simpr = new Progress();
+            simpr.Start();
 
             while (simpr.Percentage < 100)
             {
@@ -72,9 +111,8 @@ namespace Demo
                 new Tuple<Progress.LEVEL,String>(Progress.LEVEL.ERROR, "Could not contact NSA!"),
                 new Tuple<Progress.LEVEL,String>(Progress.LEVEL.SUCCESS, "Welcome! :-)")
             };
-
-            CoEx.WriteLine();
-            CoEx.WriteTitle("Progress bar with log");
+            
+            CoEx.WriteTitleLarge("Progress bar with status messages");
             CoEx.WriteLine();
             
             Progress prog = new Progress();
@@ -92,11 +130,8 @@ namespace Demo
             /**
              * Intro
              */
-            CoEx.WriteLine();
-            CoEx.WriteTitle("Welcome to PerrysNetConsole Demo Application");
-            CoEx.WriteTitle("Code & Concept by Christian Blechert");
-            CoEx.WriteLine();
-            CoEx.WriteLine("Enjoy!");
+            CoEx.WriteTitleLarge("Welcome to PerrysNetConsole Demo Application");
+            CoEx.WriteTitleLarge("Code & Concept by Christian Blechert");
             CoEx.WriteLine();
 
             CoEx.WriteLine("This is the introduction for a highlighted text");
@@ -113,7 +148,7 @@ namespace Demo
             CoEx.WriteHl("10", "11", "12", "13", "14", "15", "16", "17", "18", "19");
 
             CoEx.WriteLine();
-            CoEx.WriteHl("And what happens when the text is too long?", "It will be wrapped. Is this quite cool? Yes, it is. :-)");
+            CoEx.WriteHl("And what happens when the text is too long?", "The really really really really really really really really really really long text will be wrapped. Is this quite cool? Yes, it is. :-)");
 
             CoEx.WriteLine();
             CoEx.WriteLine();
@@ -125,8 +160,7 @@ namespace Demo
             /**
              * Basic columns
              */
-            CoEx.WriteLine();
-            CoEx.WriteTitle("Basic column system, no custom column length, no custom formatting");
+            CoEx.WriteTitleLarge("Basic column system, no custom column length, no custom formatting");
             CoEx.WriteLine();
 
             // loop both exampledata arrays
@@ -159,6 +193,7 @@ namespace Demo
              * Basic table
              */
             var rc1 = RowCollection.Create(exambledata);
+            CoEx.WriteTitleLarge("Tables - Chapter 1");
             CoEx.WriteLine();
             CoEx.WriteTitle("The basic table");
             CoEx.WriteTable(rc1);
@@ -179,6 +214,7 @@ namespace Demo
             /**
              * Basic table with long text
              */
+            CoEx.WriteTitleLarge("Tables - Chapter 2");
             CoEx.WriteLine();
             CoEx.WriteTitle("The basic table with long text");
             var rc2 = RowCollection.Create(exambledatalong);
@@ -197,6 +233,7 @@ namespace Demo
             rc1.Settings.Border.HorizontalLineBody = BorderConf.HorizontalLineAfterHeaderFunc;
             rc2.Length = length;
 
+            CoEx.WriteTitleLarge("Tables - Chapter 3");
             CoEx.WriteLine();
             CoEx.WriteTitle("Synchonize column length over multiple tables");
             CoEx.WriteLine();
@@ -212,6 +249,7 @@ namespace Demo
             /**
              * Conditional coloring
              */
+            CoEx.WriteTitleLarge("Tables - Chapter 4");
             CoEx.WriteLine();
             CoEx.WriteTitle("Colorize cells by conditions");
 
@@ -282,7 +320,7 @@ namespace Demo
             {
                 return (colindex == 0);
             };
-
+            
             CoEx.WriteLine();
             CoEx.WriteTitle("Background color based on hours value");
             CoEx.WriteTable(rc2);
@@ -303,7 +341,8 @@ namespace Demo
                     default: return RowCollectionSettings.ALIGN.LEFT;
                 }
             };
-            
+
+            CoEx.WriteTitleLarge("Tables - Chapter 5");
             CoEx.WriteLine();
             CoEx.WriteTitle("Column alignment");
             CoEx.WriteTable(rc2);
@@ -324,7 +363,7 @@ namespace Demo
         private static void Continue()
         {
             CoEx.WriteLine();
-            CoEx.Confirm("Continue");
+            CoEx.PressAnyKey();
             CoEx.Clear();
         }
 

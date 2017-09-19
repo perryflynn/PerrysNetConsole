@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace PerrysNetConsole
 {
+
+    public delegate void ConsoleWriteEventHandler(String text);
+
     public static class CoEx
     {
+
+        public static String DEFAULT_PRESSANYKEYMSG = "Press any key...";
 
         public static int BUFFERPADDING = 1;
         public static int COLUMNPADDING = 2;
@@ -20,39 +24,92 @@ namespace PerrysNetConsole
         public static ConsoleColor HLFG = ConsoleColor.Blue;
 
 
-        public static int Width { get { return Console.BufferWidth - BUFFERPADDING; } }
+        public static int Width { get { return BufferWidth - BUFFERPADDING; } }
+        public static int Height { get { return BufferHeight; } }
         public static int CursorX { get { return Console.CursorLeft; } set { Console.CursorLeft = value; } }
         public static int CursorY { get { return Console.CursorTop; } set { Console.CursorTop = value; } }
+        public static int BufferWidth { get { return Console.BufferWidth; } set { Console.BufferWidth = value; } }
+        public static int BufferHeight { get { return Console.BufferHeight; } set { Console.BufferHeight = value; } }
+        public static Encoding OutputEncoding { get { return Console.OutputEncoding; } set { Console.OutputEncoding = value; } }
+
+        public static event ConsoleWriteEventHandler OnWrite;
 
         public static void Clear()
         {
             Console.Clear();
         }
 
-        public static void ResetColor()
+        public static void Seek(int? x, int? y)
         {
-            Console.ResetColor();
+            Seek(x, y, false);
         }
 
-        public static void Seek(int x, int y)
+        public static void Seek(int? x, int? y, bool clear)
         {
-            if(x<0)
+            if (x.HasValue == false)
+            {
+                x = CursorX;
+            }
+            else if(x<0)
             {
                 x = CursorX + x;
             }
 
-            if(y<0)
+            if (y.HasValue == false)
+            {
+                y = CursorY;
+            }
+            else if(y<0)
             {
                 y = CursorY + y;
             }
 
-            CursorX = x;
-            CursorY = y;
+            if (clear && y <= CursorY)
+            {
+                for (int i = CursorY; i >= y; i--)
+                {
+                    CursorX = 0;
+                    Write("".PadLeft(Width, ' '));
+                    CursorX = 0;
+                    if (i > y)
+                    {
+                        CursorY = CursorY - 1;
+                    }
+                }
+            }
+            else
+            {
+                CursorY = y.Value;
+            }
+            
+            CursorX = x.Value;
         }
 
         public static void GoUp()
         {
             Seek(0, -1);
+        }
+
+        public static void Scroll(int x, int y)
+        {
+            if (x >= 0 && y >= 0 && x <= BufferWidth && y <= BufferHeight)
+            {
+                Console.SetWindowPosition(x, y);
+            }
+        }
+
+        public static void DelayedScroll(int x, int y, int delayms)
+        {
+            new Thread(() =>
+            {
+                Thread.Sleep(delayms);
+                Scroll(x, y);
+            }).Start();
+        }
+
+        public static void ResetColor()
+        {
+            Console.ResetColor();
         }
 
         public static void SetColor(ConsoleColor? bg, ConsoleColor? fg)
@@ -78,29 +135,84 @@ namespace PerrysNetConsole
             }
         }
 
-        public static void Write(String format, params String[] args)
+        public static String ReadLine()
         {
-            Console.Write(format, args);
+            return Console.ReadLine();
+        }
+
+        public static String ReadKeyChar()
+        {
+            return Console.ReadKey().KeyChar.ToString().Trim();
+        }
+
+        public static void Write(String str, ConsoleColor? background, ConsoleColor? foreground)
+        {
+            if (foreground.HasValue || background.HasValue)
+            {
+                SetColor(background, foreground);
+            }
+
+            Console.Write(str);
+
+            if (foreground.HasValue || background.HasValue)
+            {
+                Console.ResetColor();
+            }
+
+            if (OnWrite != null)
+            {
+                OnWrite(str);
+            }
         }
 
         public static void Write(String str)
         {
-            Console.Write(str);
+            Write(str, null, null);
         }
 
-        public static void WriteLine(String format, params String[] args)
+        public static void Write(String[] strings)
         {
-            Console.WriteLine(format, args);
+            strings.ToList().ForEach(v => Write(v));
         }
 
         public static void WriteLine(String str)
         {
-            Console.WriteLine(str);
+            Write(str + Environment.NewLine);
+        }
+
+        public static void WriteLine(String str, ConsoleColor? background, ConsoleColor? foreground)
+        {
+            Write(str + Environment.NewLine, background, foreground);
+        }
+
+        public static void WriteLine(String[] strings)
+        {
+            strings.ToList().ForEach(v => WriteLine(v));
+        }
+
+        public static void Write(String format, ConsoleColor? background, ConsoleColor? foreground, params object[] args)
+        {
+            Write(String.Format(format, args), background, foreground);
+        }
+
+        public static void Write(String format, params object[] args)
+        {
+            Write(String.Format(format, args));
+        }
+
+        public static void WriteLine(String format, params object[] args)
+        {
+            WriteLine(String.Format(format, args));
+        }
+
+        public static void WriteLine(String format, ConsoleColor? background, ConsoleColor? foreground, params object[] args)
+        {
+            WriteLine(String.Format(format, args), background, foreground);
         }
 
         public static void WriteLine()
         {
-            Console.WriteLine();
+            WriteLine("");
         }
 
         public static bool Confirm(String msg)
@@ -108,6 +220,32 @@ namespace PerrysNetConsole
             Write("{0} (Enter) ", msg);
             String res = Console.ReadLine();
             return (res == "");
+        }
+
+        public static void PressAnyKey()
+        {
+            PressAnyKey(DEFAULT_PRESSANYKEYMSG, null);
+        }
+
+        public static void PressAnyKey(String message)
+        {
+            PressAnyKey(message, null);
+        }
+
+        public static void PressAnyKey(Action callback)
+        {
+            PressAnyKey(DEFAULT_PRESSANYKEYMSG, callback);
+        }
+
+        public static void PressAnyKey(String message, Action callback)
+        {
+            Write(message + " ");
+            if (callback != null)
+            {
+                callback();
+            }
+            ReadKeyChar();
+            WriteLine();
         }
 
         public static void WriteBorderRow(BorderConf bconf, LengthCollection lconf)
@@ -253,6 +391,16 @@ namespace PerrysNetConsole
         public static void WriteTitle(LengthCollection length, String[] s)
         {
             WriteColumnsColored(RowConf.Create(length, s).PresetTitle().SetBordered(false));
+        }
+
+        public static void WriteTitleLarge(params String[] s)
+        {
+            WriteColumnsColored(RowConf.Create(s).PresetTitle().SetBordered(false).SetAlignment(RowConf.ALIGNCENTER).SetHlPadding(true));
+        }
+
+        public static void WriteTitleLarge(LengthCollection length, String[] s)
+        {
+            WriteColumnsColored(RowConf.Create(length, s).PresetTitle().SetBordered(false).SetAlignment(RowConf.ALIGNCENTER).SetHlPadding(true));
         }
 
     }

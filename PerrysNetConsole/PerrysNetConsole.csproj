@@ -41,13 +41,19 @@
   <ItemGroup>
     <Compile Include="BorderConf.cs" />
     <Compile Include="CoEx.cs" />
+    <Compile Include="FilePrompt.cs" />
     <Compile Include="LengthCollection.cs" />
     <Compile Include="LengthConf.cs" />
+    <Compile Include="LoadIndicator.cs" />
     <Compile Include="Progress.cs" />
+    <Compile Include="Prompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RowCollection.cs" />
     <Compile Include="RowConf.cs" />
     <Compile Include="RowCollectionSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PerrysNetConsole.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

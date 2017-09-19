@@ -1,24 +1,22 @@
-Klassensammlung zur Erstellung von Fortschrittsanzeigen und 
-Tabellen in C# .NET Konsolen Anwendungen.
+A collection of C# classes to create fancy console applications.
 
-Siehe Demo Anwendung für weitere Details.
+- Prompt / Multiple Choice Prompt
+- Progressbar / Progressbar with status messages
+- Loading indicator
+- Grid system for text output
+- Tables
+- Dynamic coloring and alignment with delegates
 
-## Screenshots
+## Demo
 
-![CMD](doc/000b.gif)
+![CMD](Demo-2017-09-18 19-56.gif)
 
-![CMD](doc/000.gif)
+## Demo Application
 
-![CMD](doc/001.PNG)
+The code includes a demo application.
 
-![CMD](doc/002.PNG)
-
-![CMD](doc/003.PNG)
-
-![CMD](doc/004.PNG)
-
-![CMD](doc/005.PNG)
-
-![CMD](doc/006.PNG)
-
-![CMD](doc/007.PNG)
+- Clone the repo: `git clone https://github.com/perryflynn/PerrysNetConsole.git`
+- Create a new solution for the projects `PerrysNetConsole` and `Demo`
+- Add `PerrysNetConsole` as reference to `Demo`
+- Set `Demo` as startup project
+- Run Demo

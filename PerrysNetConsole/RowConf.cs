@@ -17,6 +17,9 @@ namespace PerrysNetConsole
         public static Func<RowConf, int, String, ConsoleColor?> HLFG = delegate(RowConf cfg, int index, String content) { return CoEx.HLFG; };
         public static Func<RowConf, int, String, bool> YESFUNC = delegate(RowConf cfg, int index, String content) { return true; };
         public static Func<RowConf, int, String, bool> NOFUNC = delegate(RowConf cfg, int index, String content) { return false; };
+        public static Func<RowConf, int, String, RowCollectionSettings.ALIGN?> ALIGNLEFT = delegate (RowConf cfg, int idx, String text) { return RowCollectionSettings.ALIGN.LEFT; };
+        public static Func<RowConf, int, String, RowCollectionSettings.ALIGN?> ALIGNCENTER = delegate (RowConf cfg, int idx, String text) { return RowCollectionSettings.ALIGN.CENTER; };
+        public static Func<RowConf, int, String, RowCollectionSettings.ALIGN?> ALIGNRIGHT = delegate (RowConf cfg, int idx, String text) { return RowCollectionSettings.ALIGN.RIGHT; };
 
         public static RowConf Create(LengthCollection length, params String[] columns)
         {
@@ -237,6 +240,12 @@ namespace PerrysNetConsole
         public RowConf SetHlPadding(bool b)
         {
             this.IsHighlightPadding = delegate(RowConf cfg, int index, String content) { return b; };
+            return this;
+        }
+
+        public RowConf SetAlignment(Func<RowConf, int, String, RowCollectionSettings.ALIGN?> alignfunc)
+        {
+            this.Align = alignfunc;
             return this;
         }
 

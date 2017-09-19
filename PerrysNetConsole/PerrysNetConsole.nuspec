@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>PerrysNetConsole</id>
+    <version>1.0.0.0</version>
+    <title>PerrysNetConsole</title>
+    <authors>Christian Blechert</authors>
+    <owners>perryflynn</owners>
+    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
+    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Graphical Controls for .NET console applications</description>
+    <releaseNotes>Initial commit. See the demo application in the project site to see what is possible.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>c# .net console progressbar locadindicator prompt table</tags>
+  </metadata>
+</package>
