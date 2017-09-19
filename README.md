@@ -9,7 +9,7 @@ A collection of C# classes to create fancy console applications.
 
 ## Demo
 
-![CMD](Demo-2017-09-18 19-56.gif)
+![CMD](doc/Demo-2017-09-18 19-56.gif)
 
 ## Demo Application
 
