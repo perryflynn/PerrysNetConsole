@@ -26,7 +26,7 @@ namespace PerrysNetConsole
         {
             get
             {
-                return this.ChoicesText.Select(v => v.Key).ToArray();
+                return this.ChoicesText != null && this.ChoicesText.Count > 0 ? this.ChoicesText.Select(v => v.Key).ToArray() : null;
             }
             set
             {
@@ -84,7 +84,7 @@ namespace PerrysNetConsole
                 valid = true;
                 temp = null;
 
-                if (this.ChoicesText.Select(v => v.Value).Any(v => v != null))
+                if (this.ChoicesText != null && this.ChoicesText.Select(v => v.Value).Any(v => v != null))
                 {
                     int maxlen = this.ChoicesText.Select(v => v.Key.Length).Max();
                     foreach (var choice in this.ChoicesText)
