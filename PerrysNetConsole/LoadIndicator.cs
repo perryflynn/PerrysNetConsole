@@ -38,7 +38,7 @@ namespace PerrysNetConsole
             {
                 try
                 {
-                    while (!this.StopPending)
+                    while (this.StopPending == false)
                     {
                         foreach (var frame in this.animation)
                         {
@@ -46,6 +46,7 @@ namespace PerrysNetConsole
                             CoEx.Write(" {0} ", this.BackgroundColor, this.ForegroundColor, frame);
                             CoEx.Write(" {0} ", message);
                             writtenonce = true;
+                            if (this.StopPending) { break; }
                             Thread.Sleep(100);
                         }
                     }

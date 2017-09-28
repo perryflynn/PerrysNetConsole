@@ -45,6 +45,7 @@
     <Compile Include="LengthCollection.cs" />
     <Compile Include="LengthConf.cs" />
     <Compile Include="LoadIndicator.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="Progress.cs" />
     <Compile Include="Prompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

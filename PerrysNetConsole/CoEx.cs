@@ -28,6 +28,7 @@ namespace PerrysNetConsole
         public static int Height { get { return BufferHeight; } }
         public static int CursorX { get { return Console.CursorLeft; } set { Console.CursorLeft = value; } }
         public static int CursorY { get { return Console.CursorTop; } set { Console.CursorTop = value; } }
+        public static bool CursorVisible { get { return Console.CursorVisible; } set { Console.CursorVisible = value; } }
         public static int BufferWidth { get { return Console.BufferWidth; } set { Console.BufferWidth = value; } }
         public static int BufferHeight { get { return Console.BufferHeight; } set { Console.BufferHeight = value; } }
         public static Encoding OutputEncoding { get { return Console.OutputEncoding; } set { Console.OutputEncoding = value; } }
@@ -77,12 +78,15 @@ namespace PerrysNetConsole
                     }
                 }
             }
-            else
+            else if (y.Value >= 0 && y.Value <= BufferHeight)
             {
                 CursorY = y.Value;
             }
-            
-            CursorX = x.Value;
+
+            if (x.Value >= 0 && x.Value <= BufferWidth)
+            {
+                CursorX = x.Value;
+            }
         }
 
         public static void GoUp()
