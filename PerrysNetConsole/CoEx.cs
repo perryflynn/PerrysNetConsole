@@ -20,6 +20,8 @@ namespace PerrysNetConsole
         public static ConsoleColor THBG = ConsoleColor.Green;
         public static ConsoleColor TITLEFG = ConsoleColor.Black;
         public static ConsoleColor TITLEBG = ConsoleColor.Gray;
+        public static ConsoleColor TITLEFGSEC = ConsoleColor.Black;
+        public static ConsoleColor TITLEBGSEC = ConsoleColor.DarkGray;
         public static ConsoleColor HLBG = ConsoleColor.Yellow;
         public static ConsoleColor HLFG = ConsoleColor.Blue;
 

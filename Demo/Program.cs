@@ -87,7 +87,7 @@ namespace Demo
                 simpr.Start();
                 do
                 {
-                    simpr.Percentage += 0.1;
+                    simpr.Percentage += 0.15;
                     System.Threading.Thread.Sleep(5);
                 }
                 while (simpr.Percentage < 100);
@@ -356,14 +356,8 @@ namespace Demo
              * Demo parts
              */
 
-            /*
-            DemoPrompt();
-            CoEx.Clear();
-
-
             DemoLoadIndicator();
             CoEx.Clear();
-            */
 
             DemoProgressBar();
             CoEx.Clear();
@@ -371,19 +365,17 @@ namespace Demo
             DemoProgressBarMessages();
             Continue();
 
+            DemoPrompt();
+            CoEx.Clear();
 
-            /*
             DemoIntro();
             Continue();
-
 
             DemoBasicColumns();
             Continue();
 
-
             DemoBasicTable();
             Continue();
-
 
             BasicTableLongText();
             Continue();
@@ -391,13 +383,11 @@ namespace Demo
             DemoTableSynchronized();
             Continue();
 
-
             DemoConditionalStyles();
             Continue();
 
-
             DemoAlignment();
-            */
+
 
             /**
              * The End

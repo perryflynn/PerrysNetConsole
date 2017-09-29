@@ -15,7 +15,7 @@ namespace PerrysNetConsole
         public bool IsRunning { get; protected set; }
         protected volatile bool StopPending;
         protected Thread CurrentThread;
-        protected String[] animation = new String[] { "-", "\\", "|", "/" };
+        protected LoadAnimation Animation = new LoadAnimation();
         public ConsoleColor? ForegroundColor { get; set; }
         public ConsoleColor? BackgroundColor { get; set; }
         public String Message { get; set; }
@@ -25,8 +25,8 @@ namespace PerrysNetConsole
             this.StopPending = false;
             this.IsRunning = false;
             this.CurrentThread = null;
-            this.ForegroundColor = ConsoleColor.Black;
-            this.BackgroundColor = ConsoleColor.Yellow;
+            this.ForegroundColor = CoEx.TITLEFG;
+            this.BackgroundColor = CoEx.TITLEBG;
             this.Message = DEFAULT_MESSAGE;
         }
 
@@ -40,16 +40,18 @@ namespace PerrysNetConsole
                 {
                     while (this.StopPending == false)
                     {
-                        foreach (var frame in this.animation)
-                        {
-                            this.Clear();
-                            CoEx.Write(" {0} ", this.BackgroundColor, this.ForegroundColor, frame);
-                            CoEx.Write(" {0} ", message);
-                            writtenonce = true;
-                            if (this.StopPending) { break; }
-                            Thread.Sleep(100);
-                        }
+                        this.Clear();
+                        CoEx.Write(" {0} ", this.BackgroundColor, this.ForegroundColor, this.Animation.NextFrame);
+                        CoEx.Write(" {0} ", message);
+                        writtenonce = true;
+                        if (this.StopPending) { break; }
+                        Thread.Sleep(100);
                     }
+
+                    this.Clear();
+                    CoEx.Write(" {0} ", this.BackgroundColor, this.ForegroundColor, LoadAnimation.ANIMATIONCOMPLETE);
+                    CoEx.Write(" {0} ", message);
+                    Thread.Sleep(500);
                 }
                 catch { }
                 finally
@@ -64,6 +66,8 @@ namespace PerrysNetConsole
             this.CurrentThread.Start();
             this.IsRunning = true;
             this.StopPending = false;
+
+            CoEx.CursorVisible = false;
         }
 
         public void Stop()
@@ -76,6 +80,8 @@ namespace PerrysNetConsole
                 this.StopPending = false;
                 this.IsRunning = false;
             }
+
+            CoEx.CursorVisible = true;
         }
 
         protected void Clear()

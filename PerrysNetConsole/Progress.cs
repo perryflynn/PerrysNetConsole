@@ -18,29 +18,8 @@ namespace PerrysNetConsole
         public static char BARPROGRESS = '█';
         public static char BAREMPTY = ' ';
         public static char BARPROGRESSTIP = '▌';
-        public static String ANIMATIONCOMPLETE = "OK";
-        public static char[] ANIMATION = new char[] { '-', '\\', '|', '/' };
 
-        protected int animationindex;
-        protected int AnimationIndex
-        {
-            get
-            {
-                this.animationindex++;
-                if (this.animationindex > ANIMATION.Length - 1)
-                {
-                    this.animationindex = 0;
-                }
-                return this.animationindex;
-            }
-        }
-        protected char AnimationFrame
-        {
-            get
-            {
-                return ANIMATION[this.AnimationIndex];
-            }
-        }
+        protected LoadAnimation Animation = new LoadAnimation();
 
         /// <summary>
         /// Thread synchronization helper object
@@ -243,7 +222,7 @@ namespace PerrysNetConsole
                 }
 
                 //--> Draw progress bar
-                String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? ANIMATIONCOMPLETE : this.AnimationFrame.ToString());
+                String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());
                 String percstr = String.Format(PERCFORMAT, cpercentage);
 
                 int barmax = CoEx.Width - loadingstr.Length - 1 - percstr.Length - BARBEGIN.Length - BAREND.Length - 1;
@@ -257,8 +236,8 @@ namespace PerrysNetConsole
                 this.IsInitialized = true;
                 CoEx.Write(loadingstr, CoEx.TITLEBG, CoEx.TITLEFG);
                 CoEx.Write(" " + percstr + BARBEGIN);
-                CoEx.Write(progress, null, ConsoleColor.DarkGray);
-                CoEx.Write(newprogress, null, ConsoleColor.Gray);
+                CoEx.Write(progress, CoEx.TITLEFGSEC, CoEx.TITLEBGSEC);
+                CoEx.Write(newprogress, CoEx.TITLEFG, CoEx.TITLEBG);
                 CoEx.Write(empty + BAREND);
 
                 //--> Set dirty status to false
@@ -272,7 +251,7 @@ namespace PerrysNetConsole
             }
             else if (cpercentage < 100)
             {
-                String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? ANIMATIONCOMPLETE : this.AnimationFrame.ToString());
+                String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());
                 CoEx.Seek(0, null);
                 CoEx.Write(loadingstr, CoEx.TITLEBG, CoEx.TITLEFG);
             }
