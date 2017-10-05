@@ -13,6 +13,8 @@ namespace PerrysNetConsole
         // Progress bar styles
 
         public static string PERCFORMAT = "{0:0.0}% ";
+        public static string PERCUNKNOWN = "??.??% ";
+        public static int WAITBARLENGTHPERC = 20;
         public static string BARBEGIN = "│";
         public static string BAREND = "│";
         public static char BARPROGRESS = '█';
@@ -30,6 +32,36 @@ namespace PerrysNetConsole
         /// Has the progress bar pending changes?
         /// </summary>
         public bool IsDirty { get; protected set; }
+
+        /// <summary>
+        /// Unknown percentage, waiting animation
+        /// </summary>
+        protected bool iswaiting;
+        public bool IsWaiting {
+            get
+            {
+                return this.iswaiting;
+            }
+            set
+            {
+                bool old = this.iswaiting;
+                this.iswaiting = value;
+                if (old == true && this.iswaiting == false)
+                {
+                    this.IsDirty = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Whitespace padding for waiting animation
+        /// </summary>
+        protected int WaitingPadding { get; set; }
+
+        /// <summary>
+        /// 1 or -1
+        /// </summary>
+        protected int WaitingIncrement { get; set; }
 
         /// <summary>
         /// Percentage before the last update
@@ -50,7 +82,7 @@ namespace PerrysNetConsole
             {
                 lock (this.instancelock)
                 {
-                    this.percentage = value;
+                    this.percentage = Math.Round(value, 5);
                     if (this.percentage < 0)
                     {
                         this.percentage = 0;
@@ -111,6 +143,8 @@ namespace PerrysNetConsole
         {
             this.percentage = 0;
             this.MessageQueue = new List<Msg>();
+            this.WaitingPadding = 0;
+            this.WaitingIncrement = 1;
         }
 
         /// <summary>
@@ -197,14 +231,15 @@ namespace PerrysNetConsole
                 this.MessageQueue.Clear();
             }
 
-            if (cisdirty || force)
+            //--> Draw bar
+            if (this.IsWaiting || cisdirty || force)
             {
                 if (this.IsInitialized)
                 {
                     CoEx.Seek(0, null, true);
                 }
 
-                //--> Draw messages
+                // Draw messages
                 if (cmsg.Count > 0)
                 {
                     if (this.IsInitialized && this.IsUsingMessages)
@@ -221,26 +256,53 @@ namespace PerrysNetConsole
                     CoEx.WriteLine();
                 }
 
-                //--> Draw progress bar
+                String percstr = this.IsWaiting ? PERCUNKNOWN : String.Format(PERCFORMAT, cpercentage);
                 String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());
-                String percstr = String.Format(PERCFORMAT, cpercentage);
-
                 int barmax = CoEx.Width - loadingstr.Length - 1 - percstr.Length - BARBEGIN.Length - BAREND.Length - 1;
-                int fill = (int)Math.Round(barmax * crecentpercentage / 100.0);
-                int newfill = (int)Math.Round(barmax * (cpercentage - crecentpercentage) / 100.0);
 
-                String progress = "".PadLeft(fill, BARPROGRESS);
-                String newprogress = "".PadLeft(newfill, BARPROGRESS);
-                String empty = "".PadLeft(barmax - (fill + newfill), BAREMPTY);
-
-                this.IsInitialized = true;
                 CoEx.Write(loadingstr, CoEx.TITLEBG, CoEx.TITLEFG);
                 CoEx.Write(" " + percstr + BARBEGIN);
-                CoEx.Write(progress, CoEx.TITLEFGSEC, CoEx.TITLEBGSEC);
-                CoEx.Write(newprogress, CoEx.TITLEFG, CoEx.TITLEBG);
-                CoEx.Write(empty + BAREND);
 
-                //--> Set dirty status to false
+                if (this.IsWaiting)
+                {
+                    // Draw waiting animation
+                    double progresslength = Math.Round(barmax * WAITBARLENGTHPERC / 100.0);
+                    int whitespacelength = (int)(barmax - progresslength);
+
+                    this.WaitingPadding += this.WaitingIncrement;
+                    if (this.WaitingPadding > whitespacelength || this.WaitingPadding < 0)
+                    {
+                        this.WaitingIncrement = this.WaitingIncrement > 0 ? -1 : 1;
+                        this.WaitingPadding += this.WaitingIncrement;
+                    }
+
+                    String beforeprogress = "".PadLeft(this.WaitingPadding, BAREMPTY);
+                    String progress = "".PadLeft((int)progresslength, BARPROGRESS);
+                    String afterprogress = "".PadLeft(whitespacelength - this.WaitingPadding, BAREMPTY);
+
+                    CoEx.Write(beforeprogress);
+                    CoEx.Write(progress, CoEx.TITLEFGSEC, CoEx.TITLEBGSEC);
+                    CoEx.Write(afterprogress);
+                }
+                else
+                {
+                    // Draw progress bar
+                    int fill = (int)Math.Round(barmax * crecentpercentage / 100.0);
+                    int newfill = (int)Math.Round(barmax * (cpercentage - crecentpercentage) / 100.0);
+
+                    String progress = "".PadLeft(fill, BARPROGRESS);
+                    String newprogress = "".PadLeft(newfill, BARPROGRESS);
+                    String empty = "".PadLeft(barmax - (fill + newfill), BAREMPTY);
+
+                    CoEx.Write(progress, CoEx.TITLEFGSEC, CoEx.TITLEBGSEC);
+                    CoEx.Write(newprogress, CoEx.TITLEFG, CoEx.TITLEBG);
+                    CoEx.Write(empty);
+                }
+
+                CoEx.Write(BAREND);
+                this.IsInitialized = true;
+                
+                // Set dirty status to false
                 if (this.IsDirty)
                 {
                     lock (this.instancelock)
@@ -249,6 +311,7 @@ namespace PerrysNetConsole
                     }
                 }
             }
+            //--> No action nessasary, only draw load indicator
             else if (cpercentage < 100)
             {
                 String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());

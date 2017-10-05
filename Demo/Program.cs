@@ -41,29 +41,6 @@ namespace Demo
         protected static RowCollection rc2 = RowCollection.Create(exambledatalong);
 
 
-        protected static void DemoPrompt()
-        {
-            Prompt prompt = new Prompt()
-            {
-                AllowEmpty = false,
-                Prefix = "Choose your choice",
-                Default = "okay",
-                ValidateChoices = true,
-                ChoicesText = new Dictionary<string, string>() {
-                    { "yes", "Yea, lets go" },
-                    { "sure", "Sure, why not" },
-                    { "okay", "Okay, go for it" },
-                    { "yay", "Yay, kay, thx, bye" }
-                }
-            };
-
-            CoEx.WriteTitleLarge("Welcome, lets get started with a basic prompt");
-            CoEx.WriteLine();
-
-            prompt.DoPrompt();
-        }
-
-
         protected static void DemoLoadIndicator()
         {
             CoEx.WriteTitleLarge("Loading indicator");
@@ -85,9 +62,16 @@ namespace Demo
             using (Progress simpr = new Progress())
             {
                 simpr.Start();
+
                 do
                 {
                     simpr.Percentage += 0.15;
+                    if (simpr.Percentage == 30)
+                    {
+                        simpr.IsWaiting = true;
+                        System.Threading.Thread.Sleep(5000);
+                        simpr.IsWaiting = false;
+                    }
                     System.Threading.Thread.Sleep(5);
                 }
                 while (simpr.Percentage < 100);
@@ -127,21 +111,54 @@ namespace Demo
                 prog.Message(states[i].Item1, states[i].Item2);
 
                 // Increase by 20 percent in small steps
-                for (int j = 0; j < 100 / states.Length; j++)
+                if (states[i].Item1 == Message.LEVEL.DEBUG)
                 {
-                    perc++;
-                    prog.Update(perc);
-                    System.Threading.Thread.Sleep(20);
+                    prog.Message(Message.LEVEL.DEBUG, "Ooops, dont know how long this will take, please wait...");
+                    prog.IsWaiting = true;
+                    System.Threading.Thread.Sleep(20000);
+                    prog.IsWaiting = false;
+                }
+                else
+                {
+                    for (int j = 0; j < 100 / states.Length; j++)
+                    {
+                        perc++;
+                        prog.Update(perc);
+                        System.Threading.Thread.Sleep(20);
+                    }
                 }
 
-                // wait 5 seconds
+                // wait 2 seconds
                 System.Threading.Thread.Sleep(2000);
             }
 
             prog.Update(100);
             prog.Stop();
 
+            System.Threading.Thread.Sleep(2000);
+        }
+
+
+        protected static void DemoPrompt()
+        {
+            Prompt prompt = new Prompt()
+            {
+                AllowEmpty = false,
+                Prefix = "Choose your choice",
+                Default = "okay",
+                ValidateChoices = true,
+                ChoicesText = new Dictionary<string, string>() {
+                    { "yes", "Yea, lets go" },
+                    { "sure", "Sure, why not" },
+                    { "okay", "Okay, go for it" },
+                    { "yay", "Yay, kay, thx, bye" }
+                }
+            };
+
+            CoEx.WriteTitleLarge("Welcome, lets get started with a basic prompt");
             CoEx.WriteLine();
+
+            prompt.DoPrompt();
         }
 
 
@@ -363,7 +380,7 @@ namespace Demo
             CoEx.Clear();
 
             DemoProgressBarMessages();
-            Continue();
+            CoEx.Clear();
 
             DemoPrompt();
             CoEx.Clear();
