@@ -105,7 +105,7 @@ namespace PerrysNetConsole
         /// <summary>
         /// Start Position
         /// </summary>
-        public int StartY { get; protected set; }
+        public ulong StartY { get; protected set; }
 
         /// <summary>
         /// Uses status messages
@@ -159,7 +159,7 @@ namespace PerrysNetConsole
 
             CoEx.CursorVisible = false;
 
-            this.StartY = CoEx.CursorY;
+            this.StartY = CoEx.RealCursorY;
             this.IsInitialized = false;
             this.IsUsingMessages = false;
             this.StopPending = false;
@@ -206,7 +206,7 @@ namespace PerrysNetConsole
         /// </summary>
         protected void Clear()
         {
-            CoEx.Seek(0, this.StartY, true);
+            CoEx.Seek(0, (int)(this.StartY - CoEx.RealCursorY), true);
         }
 
         /// <summary>

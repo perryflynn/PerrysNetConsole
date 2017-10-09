@@ -33,7 +33,13 @@ namespace PerrysNetConsole
         public static bool CursorVisible { get { return Console.CursorVisible; } set { Console.CursorVisible = value; } }
         public static int BufferWidth { get { return Console.BufferWidth; } set { Console.BufferWidth = value; } }
         public static int BufferHeight { get { return Console.BufferHeight; } set { Console.BufferHeight = value; } }
+        public static int WindowWidth { get { return Console.WindowWidth; } set { Console.WindowWidth = value; } }
+        public static int WindowHeight { get { return Console.WindowHeight; } set { Console.WindowHeight = value; } }
+        public static int WindowPosX { get { return Console.WindowLeft; } set { Console.WindowLeft = value; } }
+        public static int WindowPosY { get { return Console.WindowTop; } set { Console.WindowTop = value; } }
         public static Encoding OutputEncoding { get { return Console.OutputEncoding; } set { Console.OutputEncoding = value; } }
+
+        public static ulong RealCursorY { get; private set; }
 
         public static event ConsoleWriteEventHandler OnWrite;
 
@@ -77,11 +83,22 @@ namespace PerrysNetConsole
                     if (i > y)
                     {
                         CursorY = CursorY - 1;
+                        RealCursorY--;
                     }
                 }
             }
             else if (y.Value >= 0 && y.Value <= BufferHeight)
             {
+                var temp = y.Value - CursorY;
+                if (temp < 0)
+                {
+                    RealCursorY -= (ulong)(0 - temp);
+                }
+                else if (temp > 0)
+                {
+                    RealCursorY += (ulong)temp;
+                }
+                
                 CursorY = y.Value;
             }
 
@@ -98,10 +115,38 @@ namespace PerrysNetConsole
 
         public static void Scroll(int x, int y)
         {
-            if (x >= 0 && y >= 0 && x <= BufferWidth && y <= BufferHeight)
+            if (x < 0)
             {
-                Console.SetWindowPosition(x, y);
+                x = CursorX + x;
             }
+
+            if (x < 0)
+            {
+                x = 0;
+            }
+
+            if (y < 0)
+            {
+                y = CursorY + y;
+            }
+
+            if (y < 0)
+            {
+                y = 0;
+            }
+
+            if (x + WindowWidth > BufferWidth)
+            {
+                x = BufferWidth - WindowWidth;
+            }
+
+            if (y + WindowHeight > BufferHeight)
+            {
+                y = BufferHeight - WindowHeight;
+            }
+
+            WindowPosX = x;
+            WindowPosY = y;
         }
 
         public static void DelayedScroll(int x, int y, int delayms)
@@ -143,12 +188,47 @@ namespace PerrysNetConsole
 
         public static String ReadLine()
         {
-            return Console.ReadLine();
+            var temp = Console.ReadLine();
+            RealCursorY++;
+            return temp;
         }
 
         public static String ReadKeyChar()
         {
             return Console.ReadKey().KeyChar.ToString().Trim();
+        }
+
+        public static bool Confirm(String msg)
+        {
+            Write("{0} (Enter) ", msg);
+            String res = ReadLine();
+            return (res == "");
+        }
+
+        public static void PressAnyKey(String message, Action callback)
+        {
+            Write(message + " ");
+            if (callback != null)
+            {
+                callback();
+            }
+            ReadKeyChar();
+            WriteLine();
+        }
+
+        public static void PressAnyKey()
+        {
+            PressAnyKey(DEFAULT_PRESSANYKEYMSG, null);
+        }
+
+        public static void PressAnyKey(String message)
+        {
+            PressAnyKey(message, null);
+        }
+
+        public static void PressAnyKey(Action callback)
+        {
+            PressAnyKey(DEFAULT_PRESSANYKEYMSG, callback);
         }
 
         public static void Write(String str, ConsoleColor? background, ConsoleColor? foreground)
@@ -158,6 +238,7 @@ namespace PerrysNetConsole
                 SetColor(background, foreground);
             }
 
+            RealCursorY += (ulong)str.ToCharArray().Where(v => v == '\n').Count();
             Console.Write(str);
 
             if (foreground.HasValue || background.HasValue)
@@ -219,39 +300,6 @@ namespace PerrysNetConsole
         public static void WriteLine()
         {
             WriteLine("");
-        }
-
-        public static bool Confirm(String msg)
-        {
-            Write("{0} (Enter) ", msg);
-            String res = Console.ReadLine();
-            return (res == "");
-        }
-
-        public static void PressAnyKey()
-        {
-            PressAnyKey(DEFAULT_PRESSANYKEYMSG, null);
-        }
-
-        public static void PressAnyKey(String message)
-        {
-            PressAnyKey(message, null);
-        }
-
-        public static void PressAnyKey(Action callback)
-        {
-            PressAnyKey(DEFAULT_PRESSANYKEYMSG, callback);
-        }
-
-        public static void PressAnyKey(String message, Action callback)
-        {
-            Write(message + " ");
-            if (callback != null)
-            {
-                callback();
-            }
-            ReadKeyChar();
-            WriteLine();
         }
 
         public static void WriteBorderRow(BorderConf bconf, LengthCollection lconf)

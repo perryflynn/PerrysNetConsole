@@ -13,6 +13,32 @@ namespace Demo
         /**
          * Example Data
          */
+        protected static String[] ScrollText = new string[] {
+            ":  Episode IV  ",
+            ":  A NEW HOPE  ",
+            "",
+            "It is a period of civil war.",
+            "Rebel spaceships, striking",
+            "from a hidden base, have won",
+            "their first victory against",
+            "the evil Galactic Empire.",
+            "",
+            "During the battle, Rebel",
+            "spies managed to steal secret",
+            "plans to the Empire's",
+            "ultimate weapon, the DEATH",
+            "station with enough power",
+            "to destroy an entire planet.",
+            "",
+            "Pursued by the Empire's",
+            "sinister agents, Princess",
+            "Leia races home aboard her",
+            "starship, custodian of the",
+            "stolen plans that can save her",
+            "people and restore",
+            "freedom to the galaxy...."
+        };
+
         protected static String[] headerdata = new String[]
         {
             "Name",
@@ -69,19 +95,61 @@ namespace Demo
                     if (simpr.Percentage == 30)
                     {
                         simpr.IsWaiting = true;
-                        System.Threading.Thread.Sleep(5000);
+                        System.Threading.Thread.Sleep(2000);
                         simpr.IsWaiting = false;
                     }
                     System.Threading.Thread.Sleep(5);
                 }
                 while (simpr.Percentage < 100);
 
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(1000);
             }
 
             CoEx.WriteLine("Progress done!");
 
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(500);
+        }
+
+
+        protected static void DemoScrolltext()
+        {
+            var width = CoEx.WindowWidth;
+            var height = CoEx.WindowHeight;
+            var bheight = CoEx.BufferHeight;
+
+            CoEx.BufferWidth = CoEx.WindowWidth = 40;
+            CoEx.WindowHeight = 20;
+
+            ulong pos = CoEx.RealCursorY;
+            for (int i = 0; i < CoEx.WindowHeight; i++) { CoEx.WriteLine(); }
+
+            foreach (var line in ScrollText)
+            {
+                var temp = line;
+                var istitle = temp.StartsWith(":");
+                if (istitle) { temp = temp.Substring(1); }
+                var row = RowConf.Create(new String[] { temp }).SetAlignment(RowConf.ALIGNCENTER);
+                if (istitle) { row = row.PresetTitle(); }
+                CoEx.WriteColumnsColored(row);
+            }
+
+            int length = (int)(CoEx.RealCursorY - pos);
+
+            for (int i = 0; i < CoEx.WindowHeight; i++) { CoEx.WriteLine(); }
+
+            CoEx.Scroll(0, (int)(pos - CoEx.RealCursorY));
+
+            for (int i = 0; i < length; i++)
+            {
+                CoEx.WindowPosY++;
+                System.Threading.Thread.Sleep(600);
+            }
+
+            System.Threading.Thread.Sleep(2000);
+
+            CoEx.WindowWidth = CoEx.BufferWidth = width;
+            CoEx.WindowHeight = height;
+            CoEx.BufferHeight = bheight;
         }
 
 
@@ -376,11 +444,14 @@ namespace Demo
             /**
              * Demo parts
              */
-             
+
             DemoLoadIndicator();
             CoEx.Clear();
 
             DemoProgressBar();
+            CoEx.Clear();
+
+            DemoScrolltext();
             CoEx.Clear();
 
             DemoProgressBarMessages();
