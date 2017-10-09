@@ -241,6 +241,7 @@ namespace Demo
             rc1.Settings.Border.Enabled = true; // enable border again
             rc1.Settings.Border.HorizontalLineBody = BorderConf.HorizontalLineAfterHeaderFunc;
             rc2.Length = length;
+            rc2.Settings.Border.Enabled = true;
 
             CoEx.WriteTitleLarge("Tables - Chapter 3");
             CoEx.WriteLine();
@@ -342,10 +343,13 @@ namespace Demo
                 {
                     case 0: return RowCollectionSettings.ALIGN.RIGHT;
                     case 1: return null;
-                    case 2: case 3: return RowCollectionSettings.ALIGN.CENTER;
+                    case 2: return RowCollectionSettings.ALIGN.RIGHT;
+                    case 3: return RowCollectionSettings.ALIGN.CENTER;
                     default: return RowCollectionSettings.ALIGN.LEFT;
                 }
             };
+
+            rc2.Settings.Border.HorizontalLineBody = delegate (RowConf r) { return true; };
 
             CoEx.WriteTitleLarge("Tables - Chapter 5");
             CoEx.WriteLine();
@@ -372,7 +376,7 @@ namespace Demo
             /**
              * Demo parts
              */
-
+             
             DemoLoadIndicator();
             CoEx.Clear();
 
@@ -384,7 +388,7 @@ namespace Demo
 
             DemoPrompt();
             CoEx.Clear();
-
+            
             DemoIntro();
             Continue();
 
