@@ -16,8 +16,7 @@ namespace PerrysNetConsole
         protected volatile bool StopPending;
         protected Thread CurrentThread;
         protected LoadAnimation Animation = new LoadAnimation();
-        public ConsoleColor? ForegroundColor { get; set; }
-        public ConsoleColor? BackgroundColor { get; set; }
+        public ColorScheme Color { get; set; }
         public String Message { get; set; }
 
         public LoadIndicator()
@@ -25,8 +24,7 @@ namespace PerrysNetConsole
             this.StopPending = false;
             this.IsRunning = false;
             this.CurrentThread = null;
-            this.ForegroundColor = CoEx.TITLEFG;
-            this.BackgroundColor = CoEx.TITLEBG;
+            this.Color = CoEx.COLORTITLE;
             this.Message = DEFAULT_MESSAGE;
         }
 
@@ -41,7 +39,7 @@ namespace PerrysNetConsole
                     while (this.StopPending == false)
                     {
                         this.Clear();
-                        CoEx.Write(" {0} ", this.BackgroundColor, this.ForegroundColor, this.Animation.NextFrame);
+                        CoEx.Write(" {0} ", this.Color, this.Animation.NextFrame);
                         CoEx.Write(" {0} ", message);
                         writtenonce = true;
                         if (this.StopPending) { break; }
@@ -49,7 +47,7 @@ namespace PerrysNetConsole
                     }
 
                     this.Clear();
-                    CoEx.Write(" {0} ", this.BackgroundColor, this.ForegroundColor, LoadAnimation.ANIMATIONCOMPLETE);
+                    CoEx.Write(" {0} ", this.Color, LoadAnimation.ANIMATIONCOMPLETE);
                     CoEx.Write(" {0} ", message);
                     Thread.Sleep(500);
                 }

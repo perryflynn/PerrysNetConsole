@@ -7,6 +7,7 @@ namespace PerrysNetConsole
 {
 
     public delegate void ConsoleWriteEventHandler(String text);
+    public delegate void ConsoleChangeColorEventHandler(ColorScheme scheme);
 
     public static class CoEx
     {
@@ -16,15 +17,11 @@ namespace PerrysNetConsole
         public static int BUFFERPADDING = 1;
         public static int COLUMNPADDING = 2;
         public static int TBLCELLPADDING = 1;
-        public static ConsoleColor THFG = ConsoleColor.Blue;
-        public static ConsoleColor THBG = ConsoleColor.Green;
-        public static ConsoleColor TITLEFG = ConsoleColor.Black;
-        public static ConsoleColor TITLEBG = ConsoleColor.Gray;
-        public static ConsoleColor TITLEFGSEC = ConsoleColor.Black;
-        public static ConsoleColor TITLEBGSEC = ConsoleColor.DarkGray;
-        public static ConsoleColor HLBG = ConsoleColor.Yellow;
-        public static ConsoleColor HLFG = ConsoleColor.Blue;
 
+        public static ColorScheme COLORTABLEHEADING = new ColorScheme(ConsoleColor.Green, ConsoleColor.Blue);
+        public static ColorScheme COLORTITLE = new ColorScheme(ConsoleColor.Gray, ConsoleColor.Black);
+        public static ColorScheme COLORTITLESEC = new ColorScheme(ConsoleColor.DarkGray, ConsoleColor.Black);
+        public static ColorScheme COLORHL = new ColorScheme(ConsoleColor.Yellow, ConsoleColor.Blue);
 
         public static int Width { get { return BufferWidth - BUFFERPADDING; } }
         public static int Height { get { return BufferHeight; } }
@@ -35,6 +32,8 @@ namespace PerrysNetConsole
         public static int BufferHeight { get { return Console.BufferHeight; } set { Console.BufferHeight = value; } }
         public static int WindowWidth { get { return Console.WindowWidth; } set { Console.WindowWidth = value; } }
         public static int WindowHeight { get { return Console.WindowHeight; } set { Console.WindowHeight = value; } }
+        public static int WindowWidthMax { get { return Console.LargestWindowWidth; } }
+        public static int WindowHeightMax { get { return Console.LargestWindowHeight; } }
         public static int WindowPosX { get { return Console.WindowLeft; } set { Console.WindowLeft = value; } }
         public static int WindowPosY { get { return Console.WindowTop; } set { Console.WindowTop = value; } }
         public static Encoding OutputEncoding { get { return Console.OutputEncoding; } set { Console.OutputEncoding = value; } }
@@ -42,6 +41,7 @@ namespace PerrysNetConsole
         public static ulong RealCursorY { get; private set; }
 
         public static event ConsoleWriteEventHandler OnWrite;
+        public static event ConsoleChangeColorEventHandler OnColorChange;
 
         public static void Clear()
         {
@@ -158,14 +158,29 @@ namespace PerrysNetConsole
             }).Start();
         }
 
-        public static void ResetColor()
+        public static void ResetColor(bool supressevent)
         {
             Console.ResetColor();
+            if (supressevent == false && OnColorChange != null)
+            {
+                OnColorChange(new ColorScheme(Console.BackgroundColor, Console.ForegroundColor));
+            }
+        }
+
+        public static void ResetColor()
+        {
+            ResetColor(false);
+        }
+
+        public static void SetColor(ColorScheme scheme)
+        {
+            scheme = scheme ?? new ColorScheme();
+            SetColor(scheme.Background, scheme.Foreground);
         }
 
         public static void SetColor(ConsoleColor? bg, ConsoleColor? fg)
         {
-            ResetColor();
+            ResetColor(true);
             if (fg.HasValue)
             {
                 Console.ForegroundColor = fg.Value;
@@ -174,15 +189,19 @@ namespace PerrysNetConsole
             {
                 Console.BackgroundColor = bg.Value;
             }
+
+            if (OnColorChange != null)
+            {
+                OnColorChange(new ColorScheme(Console.BackgroundColor, Console.ForegroundColor));
+            }
         }
 
         public static void SetColor(RowConf cfg, int column, String content)
         {
             if (cfg.IsColorize == null || cfg.IsColorize(cfg, column, content))
             {
-                ConsoleColor? bg = cfg.BackgroundColor == null ? null : cfg.BackgroundColor(cfg, column, content);
-                ConsoleColor? fg = cfg.ForegroundColor == null ? null : cfg.ForegroundColor(cfg, column, content);
-                SetColor(bg, fg);
+                ColorScheme color = cfg.Color == null ? null : cfg.Color(cfg, column, content);
+                SetColor(color);
             }
         }
 
@@ -252,9 +271,14 @@ namespace PerrysNetConsole
             }
         }
 
+        public static void Write(String str, ColorScheme color)
+        {
+            Write(str, color.Background, color.Foreground);
+        }
+
         public static void Write(String str)
         {
-            Write(str, null, null);
+            Write(str, new ColorScheme(null, null));
         }
 
         public static void Write(String[] strings)
@@ -272,6 +296,11 @@ namespace PerrysNetConsole
             Write(str + Environment.NewLine, background, foreground);
         }
 
+        public static void WriteLine(String str, ColorScheme color)
+        {
+            WriteLine(str, color.Background, color.Foreground);
+        }
+
         public static void WriteLine(String[] strings)
         {
             strings.ToList().ForEach(v => WriteLine(v));
@@ -280,6 +309,11 @@ namespace PerrysNetConsole
         public static void Write(String format, ConsoleColor? background, ConsoleColor? foreground, params object[] args)
         {
             Write(String.Format(format, args), background, foreground);
+        }
+
+        public static void Write(String format, ColorScheme color, params object[] args)
+        {
+            Write(format, color.Background, color.Foreground, args);
         }
 
         public static void Write(String format, params object[] args)
@@ -295,6 +329,11 @@ namespace PerrysNetConsole
         public static void WriteLine(String format, ConsoleColor? background, ConsoleColor? foreground, params object[] args)
         {
             WriteLine(String.Format(format, args), background, foreground);
+        }
+
+        public static void WriteLine(String format, ColorScheme color, params object[] args)
+        {
+            WriteLine(format, color.Background, color.Foreground, args);
         }
 
         public static void WriteLine()

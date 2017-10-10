@@ -9,12 +9,9 @@ namespace PerrysNetConsole
     public class RowConf
     {
 
-        public static Func<RowConf, int, String, ConsoleColor?> THFG = delegate(RowConf cfg, int index, String content) { return CoEx.THFG; };
-        public static Func<RowConf, int, String, ConsoleColor?> THBG = delegate(RowConf cfg, int index, String content) { return CoEx.THBG; };
-        public static Func<RowConf, int, String, ConsoleColor?> TITLEFG = delegate(RowConf cfg, int index, String content) { return CoEx.TITLEFG; };
-        public static Func<RowConf, int, String, ConsoleColor?> TITLEBG = delegate(RowConf cfg, int index, String content) { return CoEx.TITLEBG; };
-        public static Func<RowConf, int, String, ConsoleColor?> HLBG = delegate(RowConf cfg, int index, String content) { return CoEx.HLBG; };
-        public static Func<RowConf, int, String, ConsoleColor?> HLFG = delegate(RowConf cfg, int index, String content) { return CoEx.HLFG; };
+        public static Func<RowConf, int, String, ColorScheme> COLORTH = delegate(RowConf cfg, int index, String content) { return CoEx.COLORTABLEHEADING; };
+        public static Func<RowConf, int, String, ColorScheme> COLORTITLE = delegate(RowConf cfg, int index, String content) { return CoEx.COLORTITLE; };
+        public static Func<RowConf, int, String, ColorScheme> COLORHL = delegate(RowConf cfg, int index, String content) { return CoEx.COLORHL; };
         public static Func<RowConf, int, String, bool> YESFUNC = delegate(RowConf cfg, int index, String content) { return true; };
         public static Func<RowConf, int, String, bool> NOFUNC = delegate(RowConf cfg, int index, String content) { return false; };
         public static Func<RowConf, int, String, RowCollectionSettings.ALIGN?> ALIGNLEFT = delegate (RowConf cfg, int idx, String text) { return RowCollectionSettings.ALIGN.LEFT; };
@@ -71,18 +68,11 @@ namespace PerrysNetConsole
             set { this.reallength = value; }
         }
 
-        protected Func<RowConf, int, String, ConsoleColor?> foregroundcolor;
-        public Func<RowConf, int, String, ConsoleColor?> ForegroundColor
+        protected Func<RowConf, int, String, ColorScheme> color;
+        public Func<RowConf, int, String, ColorScheme> Color
         {
-            get { return this.foregroundcolor == null && this.Parent != null ? this.Parent.Settings.ForegroundColor : this.foregroundcolor; }
-            set { this.foregroundcolor = value; }
-        }
-
-        protected Func<RowConf, int, String, ConsoleColor?> backgroundcolor;
-        public Func<RowConf, int, String, ConsoleColor?> BackgroundColor
-        {
-            get { return this.backgroundcolor == null && this.Parent != null ? this.Parent.Settings.BackgroundColor : this.backgroundcolor; }
-            set { this.backgroundcolor = value; }
+            get { return this.color == null && this.Parent != null ? this.Parent.Settings.Color : this.color; }
+            set { this.color = value; }
         }
 
         protected Func<RowConf, int, String, bool> iscolorize;
@@ -209,26 +199,10 @@ namespace PerrysNetConsole
             return this;
         }
 
-        public RowConf SetFg(Func<RowConf, int, String, ConsoleColor?> c)
+        public RowConf SetColor(Func<RowConf, int, String, ColorScheme> c)
         {
-            this.ForegroundColor = c;
+            this.Color = c;
             return this;
-        }
-
-        public RowConf SetFg(ConsoleColor? c)
-        {
-            return this.SetFg(delegate(RowConf cfg, int index, String content) { return c; });
-        }
-
-        public RowConf SetBg(Func<RowConf, int, String, ConsoleColor?> c)
-        {
-            this.BackgroundColor = c;
-            return this;
-        }
-
-        public RowConf SetBg(ConsoleColor? c)
-        {
-            return this.SetBg(delegate(RowConf cfg, int index, String content) { return c; });
         }
 
         public RowConf SetColorize(bool b)
@@ -261,8 +235,7 @@ namespace PerrysNetConsole
                 border = (standalone ? this.Border.Clone() : this.border),
                 Data = this.Data.ToList().ToArray(),
                 RealLength = (standalone ? this.RealLength.Clone() : this.reallength),
-                ForegroundColor = (standalone ? this.ForegroundColor : this.foregroundcolor),
-                BackgroundColor = (standalone ? this.BackgroundColor : this.backgroundcolor),
+                Color = (standalone ? this.Color : this.color),
                 IsColorize = (standalone ? this.IsColorize : this.iscolorize),
                 IsHighlightPadding = (standalone ? this.IsHighlightPadding : this.ishighlightpadding)
             };
@@ -272,8 +245,7 @@ namespace PerrysNetConsole
 
         public RowConf PresetTH()
         {
-            this.ForegroundColor = THFG;
-            this.BackgroundColor = THBG;
+            this.color = COLORTH;
             this.IsHighlightPadding = YESFUNC;
             this.IsColorize = YESFUNC;
             return this;
@@ -281,16 +253,14 @@ namespace PerrysNetConsole
 
         public RowConf PresetHL()
         {
-            this.ForegroundColor = HLFG;
-            this.BackgroundColor = HLBG;
+            this.Color = COLORHL;
             this.IsHighlightPadding = NOFUNC;
             return this;
         }
 
         public RowConf PresetTitle()
         {
-            this.ForegroundColor = TITLEFG;
-            this.BackgroundColor = TITLEBG;
+            this.Color = COLORTITLE;
             this.IsHighlightPadding = NOFUNC;
             return this;
         }

@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="BorderConf.cs" />
     <Compile Include="CoEx.cs" />
+    <Compile Include="ColorScheme.cs" />
     <Compile Include="FilePrompt.cs" />
     <Compile Include="LengthCollection.cs" />
     <Compile Include="LengthConf.cs" />

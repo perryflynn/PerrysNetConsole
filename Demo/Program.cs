@@ -62,9 +62,9 @@ namespace Demo
             new String[] { "", "", "", "" }
         };
 
-        protected static RowConf header = RowConf.Create(headerdata).PresetTH();
-        protected static RowCollection rc1 = RowCollection.Create(exambledata);
-        protected static RowCollection rc2 = RowCollection.Create(exambledatalong);
+        protected static RowConf header;
+        protected static RowCollection rc1;
+        protected static RowCollection rc2;
 
 
         protected static void DemoLoadIndicator()
@@ -117,8 +117,9 @@ namespace Demo
             var height = CoEx.WindowHeight;
             var bheight = CoEx.BufferHeight;
 
-            CoEx.BufferWidth = CoEx.WindowWidth = 40;
             CoEx.WindowHeight = 20;
+            CoEx.BufferWidth = CoEx.WindowWidth = 40;
+            CoEx.BufferHeight = ScrollText.Length + (2 * CoEx.WindowHeight);
 
             ulong pos = CoEx.RealCursorY;
             for (int i = 0; i < CoEx.WindowHeight; i++) { CoEx.WriteLine(); }
@@ -284,6 +285,7 @@ namespace Demo
 
             CoEx.WriteLine();
             CoEx.WriteTitle("The basic table with header");
+            rc1.Import(0, header);
             CoEx.WriteTable(rc1);
 
             CoEx.WriteLine();
@@ -298,6 +300,7 @@ namespace Demo
             CoEx.WriteTitleLarge("Tables - Chapter 2");
             CoEx.WriteLine();
             CoEx.WriteTitle("The basic table with long text");
+            rc2.Import(0, header);
             CoEx.WriteTable(rc2);
         }
 
@@ -330,22 +333,18 @@ namespace Demo
             CoEx.WriteTitle("Colorize cells by conditions");
 
             // colorize column by index
-            rc1.Settings.BackgroundColor = delegate (RowConf me, int colindex, String s)
+            rc1.Settings.Color = delegate (RowConf me, int colindex, String s)
             {
+                var temp = new ColorScheme(null, ConsoleColor.Blue);
                 switch (colindex)
                 {
-                    case 0: return ConsoleColor.Cyan;
-                    case 1: return ConsoleColor.White;
-                    case 2: return ConsoleColor.Magenta;
-                    case 3: return ConsoleColor.Red;
-                    default: return ConsoleColor.Gray;
+                    case 0: temp.Background = ConsoleColor.Cyan; break;
+                    case 1: temp.Background = ConsoleColor.White; break;
+                    case 2: temp.Background = ConsoleColor.Magenta; break;
+                    case 3: temp.Background = ConsoleColor.Red; break;
+                    default: temp.Background = ConsoleColor.Gray; break;
                 }
-            };
-
-            // Text is blue
-            rc1.Settings.ForegroundColor = delegate (RowConf me, int colindex, String s)
-            {
-                return ConsoleColor.Blue;
+                return temp;
             };
 
             // Highlight padding every second column
@@ -359,31 +358,18 @@ namespace Demo
             CoEx.WriteTable(rc1);
 
             // if hours>10 is column 2 yellow and column 0 red
-            rc2.Settings.BackgroundColor = delegate (RowConf me, int colindex, String s)
+            rc2.Settings.Color = delegate (RowConf me, int colindex, String s)
             {
                 double hours;
                 bool success = Double.TryParse(me.Data[2], out hours);
 
                 if (colindex == 2 && success && hours >= 10)
                 {
-                    return ConsoleColor.Yellow;
+                    return new ColorScheme(ConsoleColor.Yellow, ConsoleColor.Blue);
                 }
                 else if (colindex == 0 && success && hours >= 10)
                 {
-                    return ConsoleColor.Red;
-                }
-                else
-                {
-                    return null;
-                }
-            };
-
-            // if background yellow, make foreground blue
-            rc2.Settings.ForegroundColor = delegate (RowConf me, int colindex, String s)
-            {
-                if (rc2.Settings.BackgroundColor(me, colindex, s) == ConsoleColor.Yellow)
-                {
-                    return ConsoleColor.Blue;
+                    return new ColorScheme(ConsoleColor.Red, null);
                 }
                 else
                 {
@@ -431,20 +417,28 @@ namespace Demo
             /**
              * Console defaults
              */
-            Console.WindowHeight = Console.LargestWindowHeight - 10;
+            CoEx.WindowHeight = CoEx.WindowHeightMax - 10;
+            CoEx.BufferHeight = 256;
+
 
             /**
              * Table defaults
              */
             RowCollection.DefaultSettings.Border.Enabled = true; // enable bordering
             RowCollection.DefaultSettings.Border.HorizontalLineBody = BorderConf.HorizontalLineAlwaysOnFunc; // line between the rows
-            rc1.Import(0, header);
-            rc2.Import(0, header);
+            
+            header = RowConf.Create(headerdata).PresetTH();
+            rc1 = RowCollection.Create(exambledata);
+            rc2 = RowCollection.Create(exambledatalong);
+
+            //rc1.Import(0, header);
+            //rc2.Import(0, header);
+
 
             /**
              * Demo parts
              */
-
+            
             DemoLoadIndicator();
             CoEx.Clear();
 
@@ -462,7 +456,7 @@ namespace Demo
             
             DemoIntro();
             Continue();
-
+            
             DemoBasicColumns();
             Continue();
 

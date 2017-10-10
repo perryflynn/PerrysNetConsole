@@ -260,7 +260,7 @@ namespace PerrysNetConsole
                 String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());
                 int barmax = CoEx.Width - loadingstr.Length - 1 - percstr.Length - BARBEGIN.Length - BAREND.Length - 1;
 
-                CoEx.Write(loadingstr, CoEx.TITLEBG, CoEx.TITLEFG);
+                CoEx.Write(loadingstr, CoEx.COLORTITLE);
                 CoEx.Write(" " + percstr + BARBEGIN);
 
                 if (this.IsWaiting)
@@ -281,7 +281,7 @@ namespace PerrysNetConsole
                     String afterprogress = "".PadLeft(whitespacelength - this.WaitingPadding, BAREMPTY);
 
                     CoEx.Write(beforeprogress);
-                    CoEx.Write(progress, CoEx.TITLEFGSEC, CoEx.TITLEBGSEC);
+                    CoEx.Write(progress, CoEx.COLORTITLESEC.Invert());
                     CoEx.Write(afterprogress);
                 }
                 else
@@ -294,8 +294,8 @@ namespace PerrysNetConsole
                     String newprogress = "".PadLeft(newfill, BARPROGRESS);
                     String empty = "".PadLeft(barmax - (fill + newfill), BAREMPTY);
 
-                    CoEx.Write(progress, CoEx.TITLEFGSEC, CoEx.TITLEBGSEC);
-                    CoEx.Write(newprogress, CoEx.TITLEFG, CoEx.TITLEBG);
+                    CoEx.Write(progress, CoEx.COLORTITLESEC.Invert());
+                    CoEx.Write(newprogress, CoEx.COLORTITLE.Invert());
                     CoEx.Write(empty);
                 }
 
@@ -316,7 +316,7 @@ namespace PerrysNetConsole
             {
                 String loadingstr = String.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());
                 CoEx.Seek(0, null);
-                CoEx.Write(loadingstr, CoEx.TITLEBG, CoEx.TITLEFG);
+                CoEx.Write(loadingstr, CoEx.COLORTITLE);
             }
         }
 
