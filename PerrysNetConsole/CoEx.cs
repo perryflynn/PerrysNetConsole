@@ -37,6 +37,8 @@ namespace PerrysNetConsole
         public static int WindowPosX { get { return Console.WindowLeft; } set { Console.WindowLeft = value; } }
         public static int WindowPosY { get { return Console.WindowTop; } set { Console.WindowTop = value; } }
         public static Encoding OutputEncoding { get { return Console.OutputEncoding; } set { Console.OutputEncoding = value; } }
+        public static ConsoleColor ForegroundColor { get { return Console.ForegroundColor; } }
+        public static ConsoleColor BackgroundColor { get { return Console.BackgroundColor; } }
 
         public static ulong RealCursorY { get; private set; }
 
@@ -260,14 +262,14 @@ namespace PerrysNetConsole
             RealCursorY += (ulong)str.ToCharArray().Where(v => v == '\n').Count();
             Console.Write(str);
 
-            if (foreground.HasValue || background.HasValue)
-            {
-                Console.ResetColor();
-            }
-
             if (OnWrite != null)
             {
                 OnWrite(str);
+            }
+
+            if (foreground.HasValue || background.HasValue)
+            {
+                Console.ResetColor();
             }
         }
 
