@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace PerrysNetConsole
 {
+    public delegate void RowCollectionSettingsStretchHorizontalChanged(bool oldvalue, bool newvalue);
+
     public class RowCollectionSettings
     {
 
@@ -17,15 +19,35 @@ namespace PerrysNetConsole
         public Func<RowConf, int, String, bool> IsHighlightPadding { set; get; }
         public Func<RowConf, int, String, ALIGN?> Align { set; get; }
 
+        protected bool stretchhorizontal;
+        public bool StretchHorizontal { get
+            {
+                return this.stretchhorizontal;
+            }
+            set
+            {
+                var old = this.stretchhorizontal;
+                this.stretchhorizontal = value;
+                if (this.OnHorizontalStretchChanged != null)
+                {
+                    OnHorizontalStretchChanged(old, value);
+                }
+            }
+        }
+
+        public event RowCollectionSettingsStretchHorizontalChanged OnHorizontalStretchChanged;
+
         public RowCollectionSettings()
         {
             this.Border = new BorderConf();
+            this.stretchhorizontal = true;
         }
 
         public RowCollectionSettings Clone()
         {
             return new RowCollectionSettings()
             {
+                stretchhorizontal = this.stretchhorizontal,
                 Border = this.Border.Clone(),
                 Color = this.Color,
                 IsColorize = this.IsColorize,

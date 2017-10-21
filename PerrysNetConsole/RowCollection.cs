@@ -71,7 +71,23 @@ namespace PerrysNetConsole
             return new RowCollection();
         }
 
-        public RowCollectionSettings Settings { get; set; }
+        protected RowCollectionSettings settings;
+        public RowCollectionSettings Settings {
+            get
+            {
+                return this.settings;
+            }
+            set
+            {
+                if (this.settings != null)
+                {
+                    this.settings.OnHorizontalStretchChanged -= this.OnHorizontalStretchChanged;
+                }
+                this.settings = value;
+                this.settings.OnHorizontalStretchChanged += this.OnHorizontalStretchChanged;
+            }
+        }
+
         public List<RowConf> Items { get; private set; }
         public int Count { get { return this.Items.Count; } }
 
@@ -167,6 +183,14 @@ namespace PerrysNetConsole
             cs.ForEach(v => this.Import(v));
             return this;
         }
+        
+        protected void OnHorizontalStretchChanged(bool oldvalue, bool newvalue)
+        {
+            if (this.IsCustomLength == false)
+            {
+                this.length = this.CalcTableLength();
+            }
+        }
 
         public IEnumerable<RowConf> AsTable()
         {
@@ -229,12 +253,24 @@ namespace PerrysNetConsole
                     item.Length -= ((int)Math.Round((diff * item.BigLengthPercent / 100)));
                 }
             }
-
-            // add remaining length to last column
-            if (collection.TotalLength < maxlength)
+            
+            if (this.Settings.StretchHorizontal)
             {
-                int diff = maxlength - collection.TotalLength;
-                collection.Items.Last().Length += diff;
+                // add remaining length to last column
+                if (collection.TotalLength < maxlength)
+                {
+                    int diff = maxlength - collection.TotalLength;
+                    collection.Items.Last().Length += diff;
+                }
+            }
+            else
+            {
+                // add length for padding and border to last column
+                int borderpadding = (3 * (collection.Items.Count - 1)) + 4;
+                if (collection.TotalLength + borderpadding < maxlength)
+                {
+                    collection.Items.Last().Length += borderpadding;
+                }
             }
 
             return collection;

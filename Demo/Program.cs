@@ -281,10 +281,12 @@ namespace Demo
             CoEx.WriteTitleLarge("Tables - Chapter 1");
             CoEx.WriteLine();
             CoEx.WriteTitle("The basic table");
+            rc1.Settings.StretchHorizontal = false;
             CoEx.WriteTable(rc1);
+            rc1.Settings.StretchHorizontal = true;
 
             CoEx.WriteLine();
-            CoEx.WriteTitle("The basic table with header");
+            CoEx.WriteTitle("The basic table with header, stretched to window width");
             rc1.Import(0, header);
             CoEx.WriteTable(rc1);
 
@@ -439,6 +441,7 @@ namespace Demo
              * Demo parts
              */
             
+            /*
             DemoLoadIndicator();
             CoEx.Clear();
 
@@ -459,6 +462,7 @@ namespace Demo
             
             DemoBasicColumns();
             Continue();
+            */
 
             DemoBasicTable();
             Continue();
