@@ -91,23 +91,22 @@ namespace Demo
 
                 do
                 {
-                    simpr.Percentage += 0.15;
-                    if (simpr.Percentage == 30)
-                    {
-                        simpr.IsWaiting = true;
-                        System.Threading.Thread.Sleep(2000);
-                        simpr.IsWaiting = false;
-                    }
+                    simpr.Percentage += 0.20;
                     System.Threading.Thread.Sleep(5);
                 }
                 while (simpr.Percentage < 100);
 
                 System.Threading.Thread.Sleep(1000);
             }
+        }
 
-            CoEx.WriteLine("Progress done!");
 
-            System.Threading.Thread.Sleep(500);
+        protected static void DemoTimeout()
+        {
+            CoEx.WriteTitleLarge("Basic timeout");
+            CoEx.WriteLine();
+
+            CoEx.Timeout(3);
         }
 
 
@@ -433,20 +432,17 @@ namespace Demo
             rc1 = RowCollection.Create(exambledata);
             rc2 = RowCollection.Create(exambledatalong);
 
-            //rc1.Import(0, header);
-            //rc2.Import(0, header);
-
 
             /**
              * Demo parts
              */
-            
-            /*
             DemoLoadIndicator();
             CoEx.Clear();
 
             DemoProgressBar();
             CoEx.Clear();
+
+            DemoTimeout();
 
             DemoScrolltext();
             CoEx.Clear();
@@ -462,7 +458,6 @@ namespace Demo
             
             DemoBasicColumns();
             Continue();
-            */
 
             DemoBasicTable();
             Continue();

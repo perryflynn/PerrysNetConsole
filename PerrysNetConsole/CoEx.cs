@@ -12,7 +12,8 @@ namespace PerrysNetConsole
     public static class CoEx
     {
 
-        public static String DEFAULT_PRESSANYKEYMSG = "Press any key...";
+        public static String DEFAULT_PRESSANYKEYMSG = "Press any key... ";
+        public static String DEFAULT_TIMEOUTMSG = "Wait for {0} seconds... ";
 
         public static int BUFFERPADDING = 1;
         public static int COLUMNPADDING = 2;
@@ -226,30 +227,39 @@ namespace PerrysNetConsole
             return (res == "");
         }
 
-        public static void PressAnyKey(String message, Action callback)
+        public static void PressAnyKey(String message)
         {
             Write(message + " ");
-            if (callback != null)
-            {
-                callback();
-            }
             ReadKeyChar();
             WriteLine();
         }
 
         public static void PressAnyKey()
         {
-            PressAnyKey(DEFAULT_PRESSANYKEYMSG, null);
+            PressAnyKey(DEFAULT_PRESSANYKEYMSG);
         }
 
-        public static void PressAnyKey(String message)
+        public static void Timeout(String message, int seconds)
         {
-            PressAnyKey(message, null);
+            CursorVisible = false;
+            for (int i = seconds; i >= 0; i--)
+            {
+                Seek(0, null, true);
+                Write(String.Format(message, i));
+                Thread.Sleep(1000);
+            }
+            Seek(0, null, true);
+            CursorVisible = true;
         }
 
-        public static void PressAnyKey(Action callback)
+        public static void Timeout(int seconds)
         {
-            PressAnyKey(DEFAULT_PRESSANYKEYMSG, callback);
+            Timeout(DEFAULT_TIMEOUTMSG, seconds);
+        }
+
+        public static void Timeout()
+        {
+            Timeout(DEFAULT_TIMEOUTMSG, 5);
         }
 
         public static void Write(String str, ConsoleColor? background, ConsoleColor? foreground)
