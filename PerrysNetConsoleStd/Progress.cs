@@ -21,6 +21,9 @@ namespace PerrysNetConsole
         public static char BAREMPTY = ' ';
         public static char BARPROGRESSTIP = '▌';
 
+        /// <summary>
+        /// Load animation helper
+        /// </summary>
         protected LoadAnimation Animation = new LoadAnimation();
 
         /// <summary>
@@ -33,10 +36,11 @@ namespace PerrysNetConsole
         /// </summary>
         public bool IsDirty { get; protected set; }
 
+        protected bool iswaiting;
+
         /// <summary>
         /// Unknown percentage, waiting animation
         /// </summary>
-        protected bool iswaiting;
         public bool IsWaiting {
             get
             {
@@ -68,10 +72,11 @@ namespace PerrysNetConsole
         /// </summary>
         protected double RecentPercentage { set; get; }
 
+        protected double percentage;
+
         /// <summary>
         /// Current percentage
         /// </summary>
-        protected double percentage;
         public double Percentage
         {
             get
@@ -257,7 +262,7 @@ namespace PerrysNetConsole
                 }
 
                 string percstr = this.IsWaiting ? PERCUNKNOWN : string.Format(PERCFORMAT, cpercentage);
-                string loadingstr = string.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());
+                string loadingstr = string.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame().ToString());
                 int barmax = CoEx.Width - loadingstr.Length - 1 - percstr.Length - BARBEGIN.Length - BAREND.Length - 1;
 
                 CoEx.Write(loadingstr, CoEx.ColorTitlePrimary);
@@ -314,8 +319,8 @@ namespace PerrysNetConsole
             //--> No action nessasary, only draw load indicator
             else if (cpercentage < 100)
             {
-                string loadingstr = string.Format(" {0} ", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame.ToString());
-                CoEx.Seek(0, null);
+                string loadingstr = string.Format("{0}", cpercentage >= 100 ? LoadAnimation.ANIMATIONCOMPLETE : this.Animation.NextFrame().ToString());
+                CoEx.Seek(1, null);
                 CoEx.Write(loadingstr, CoEx.ColorTitlePrimary);
             }
         }

@@ -11,9 +11,9 @@ namespace PerrysNetConsole
 
         public static string ANIMATIONCOMPLETE { get { return "OK"; } }
         public static char[] ANIMATION { get { return new char[] { '-', '\\', '|', '/' }; } }
-        
+
         protected int animationindex;
-        protected int AnimationIndex
+        protected int NextAnimationIndex
         {
             get
             {
@@ -26,18 +26,14 @@ namespace PerrysNetConsole
             }
         }
 
-        public char NextFrame
-        {
-            get
-            {
-                return ANIMATION[this.AnimationIndex];
-            }
-        }
-
         public LoadAnimation()
         {
             this.animationindex = -1;
         }
 
+        public char NextFrame()
+        {
+            return ANIMATION[this.NextAnimationIndex];
+        }
     }
 }

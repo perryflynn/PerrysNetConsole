@@ -38,10 +38,19 @@ namespace PerrysNetConsole
                 {
                     while (this.StopPending == false)
                     {
-                        this.Clear();
-                        CoEx.Write(" {0} ", this.Color, this.Animation.NextFrame);
-                        CoEx.Write(" {0} ", message);
-                        writtenonce = true;
+                        if (writtenonce)
+                        {
+                            CoEx.Seek(1, null);
+                            CoEx.Write("{0}", this.Color, this.Animation.NextFrame());
+                        }
+                        else
+                        {
+                            this.Clear();
+                            CoEx.Write(" {0} ", this.Color, this.Animation.NextFrame());
+                            CoEx.Write(" {0} ", message);
+                            writtenonce = true;
+                        }
+
                         if (this.StopPending) { break; }
                         Thread.Sleep(100);
                     }
