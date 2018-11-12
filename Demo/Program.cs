@@ -141,7 +141,7 @@ namespace Demo
 
             for (int i = 0; i < length; i++)
             {
-                CoEx.WindowPosY++;
+                CoEx.BufferViewportY++;
                 System.Threading.Thread.Sleep(600);
             }
 

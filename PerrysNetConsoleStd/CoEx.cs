@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 /**
-    Unsupported functions by unix systems
+    Unsupported functions by unix systems:
     https://github.com/dotnet/corefx/tree/master/src/System.Console/src/System
 
     NumberLock
@@ -25,6 +26,7 @@ using System.Threading;
     MoveBufferArea
     MoveBufferArea
 
+    Handling of unknown colors in unix terminals:
     ConsoleColor UnknownColor = (ConsoleColor)(-1);
 */
 
@@ -235,7 +237,7 @@ namespace PerrysNetConsole
         /// Horizontal offset of the buffer shown in window
         /// </summary>
         /// <exception cref="System.PlatformNotSupportedException">Setter not supported on some systems</exception>
-        public static int WindowPosX
+        public static int BufferViewportX
         {
             get { return Console.WindowLeft; }
             set { Console.WindowLeft = value; }
@@ -245,7 +247,7 @@ namespace PerrysNetConsole
         /// Vertical offset of the buffer shown in window 
         /// </summary>
         /// <exception cref="System.PlatformNotSupportedException">Setter not supported on some systems</exception>
-        public static int WindowPosY
+        public static int BufferViewportY
         {
             get { return Console.WindowTop; }
             set { Console.WindowTop = value; }
@@ -289,6 +291,19 @@ namespace PerrysNetConsole
             try
             {
                 action.Invoke();
+                return true;
+            }
+            catch (PlatformNotSupportedException)
+            {
+                return false;
+            }
+        }
+
+        private static async Task<bool> TryPlatformAsync(Func<Task> action)
+        {
+            try
+            {
+                await action.Invoke();
                 return true;
             }
             catch (PlatformNotSupportedException)
@@ -399,17 +414,25 @@ namespace PerrysNetConsole
                 y = BufferHeight - WindowHeight;
             }
 
-            WindowPosX = x;
-            WindowPosY = y;
+            BufferViewportX = x;
+            BufferViewportY = y;
         }
 
-        public static void DelayedScroll(int x, int y, int delayms)
+        public static bool TryScroll(int x, int y)
         {
-            new Thread(() =>
-            {
-                Thread.Sleep(delayms);
-                Scroll(x, y);
-            }).Start();
+            return TryPlatform(() => { Scroll(x, y); });
+        }
+
+        public static async Task ScrollAsync(int x, int y, int delayms)
+        {
+            await Task.Delay(delayms);
+            Scroll(x, y);
+        }
+
+        public static async Task<bool> TryScrollAsync(int x, int y, int delayms)
+        {
+            Thread.Sleep(delayms);
+            return await TryPlatformAsync(async () => { await ScrollAsync(x, y, delayms); });
         }
 
         public static void ResetColor(bool supressevent)
@@ -466,6 +489,57 @@ namespace PerrysNetConsole
         public static string ReadKeyChar()
         {
             return Console.ReadKey().KeyChar.ToString().Trim();
+        }
+
+        public static void SetWindowSize(int? width, int? height)
+        {
+            if (width.HasValue)
+            {
+                WindowWidth = width.Value;
+            }
+            if (height.HasValue)
+            {
+                WindowHeight = height.Value;
+            }
+        }
+
+        public static bool TrySetWindowSize(int? width, int? height)
+        {
+            return TryPlatform(() => { SetWindowSize(width, height); });
+        }
+
+        public static void SetBufferSize(int? width, int? height)
+        {
+            if (width.HasValue)
+            {
+                BufferWidth = width.Value;
+            }
+            if (height.HasValue)
+            {
+                BufferHeight = height.Value;
+            }
+        }
+
+        public static bool TrySetBufferSize(int? width, int? height)
+        {
+            return TryPlatform(() => { SetBufferSize(width, height); });
+        }
+
+        public static void SetBufferViewport(int? x, int? y)
+        {
+            if (x.HasValue)
+            {
+                BufferViewportX = x.Value;
+            }
+            if (y.HasValue)
+            {
+                BufferViewportY = y.Value;
+            }
+        }
+
+        public static bool TrySetBufferViewport(int? x, int? y)
+        {
+            return TryPlatform(() => { SetBufferViewport(x, y); });
         }
 
         public static bool Confirm(string msg)
