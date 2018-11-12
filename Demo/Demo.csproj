@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Demo</RootNamespace>
     <AssemblyName>Demo</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,9 +49,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PerrysNetConsole\PerrysNetConsole.csproj">
-      <Project>{26e4eeff-00ff-41aa-aa8f-eca3ad4cb53c}</Project>
-      <Name>PerrysNetConsole</Name>
+    <ProjectReference Include="..\PerrysNetConsoleStd\PerrysNetConsoleStd.csproj">
+      <Project>{5449c934-d506-44ab-b61f-bb6737a8ab4a}</Project>
+      <Name>PerrysNetConsoleStd</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -13,7 +13,7 @@ namespace Demo
         /**
          * Example Data
          */
-        protected static String[] ScrollText = new string[] {
+        protected static string[] ScrollText = new string[] {
             ":  Episode IV  ",
             ":  A NEW HOPE  ",
             "",
@@ -39,7 +39,7 @@ namespace Demo
             "freedom to the galaxy...."
         };
 
-        protected static String[] headerdata = new String[]
+        protected static string[] headerdata = new string[]
         {
             "Name",
             "Project",
@@ -47,19 +47,19 @@ namespace Demo
             "Comment",
         };
 
-        protected static String[][] exambledata = new String[][]
+        protected static string[][] exambledata = new string[][]
         {
-            new String[] { "Unittest", "Project A", "12", "Success" },
-            new String[] { "Bugfix", "Project XY", "1", "" },
-            new String[] { "Feature", "Shopsystem", "32", "Next: Unittesting" }
+            new string[] { "Unittest", "Project A", "12", "Success" },
+            new string[] { "Bugfix", "Project XY", "1", "" },
+            new string[] { "Feature", "Shopsystem", "32", "Next: Unittesting" }
         };
 
-        protected static String[][] exambledatalong = new String[][]
+        protected static string[][] exambledatalong = new string[][]
         {
-            new String[] { "Rollout new Database Schema", "Shop 2.0", "12", "Need more testing, it was very complicated to migrate the records into the new schema." },
-            new String[] { "Unittesting", "DBLib", "2", "Success" },
-            new String[] { "CVS to GIT", "Shop 2.0", "4", "" },
-            new String[] { "", "", "", "" }
+            new string[] { "Rollout new Database Schema", "Shop 2.0", "12", "Need more testing, it was very complicated to migrate the records into the new schema." },
+            new string[] { "Unittesting", "DBLib", "2", "Success" },
+            new string[] { "CVS to GIT", "Shop 2.0", "4", "" },
+            new string[] { "", "", "", "" }
         };
 
         protected static RowConf header;
@@ -128,7 +128,7 @@ namespace Demo
                 var temp = line;
                 var istitle = temp.StartsWith(":");
                 if (istitle) { temp = temp.Substring(1); }
-                var row = RowConf.Create(new String[] { temp }).SetAlignment(RowConf.ALIGNCENTER);
+                var row = RowConf.Create(new string[] { temp }).SetAlignment(RowConf.ALIGNCENTER);
                 if (istitle) { row = row.PresetTitle(); }
                 CoEx.WriteColumnsColored(row);
             }
@@ -155,14 +155,14 @@ namespace Demo
 
         protected static void DemoProgressBarMessages()
         {
-            Tuple<Message.LEVEL, String>[] states = new Tuple<Message.LEVEL, String>[]
+            Tuple<Message.LEVEL, string>[] states = new Tuple<Message.LEVEL, string>[]
             {
-                new Tuple<Message.LEVEL,String>(Message.LEVEL.INFO, "Initialize"),
-                new Tuple<Message.LEVEL,String>(Message.LEVEL.INFO, "This is a message on INFO level"),
-                new Tuple<Message.LEVEL,String>(Message.LEVEL.DEBUG, "Debugging message"),
-                new Tuple<Message.LEVEL,String>(Message.LEVEL.WARN, "Serious warning, be careful!"),
-                new Tuple<Message.LEVEL,String>(Message.LEVEL.ERROR, "Fatal error, its too late to be careful..."),
-                new Tuple<Message.LEVEL,String>(Message.LEVEL.SUCCESS, "Finally done with this demo!")
+                new Tuple<Message.LEVEL,string>(Message.LEVEL.INFO, "Initialize"),
+                new Tuple<Message.LEVEL,string>(Message.LEVEL.INFO, "This is a message on INFO level"),
+                new Tuple<Message.LEVEL,string>(Message.LEVEL.DEBUG, "Debugging message"),
+                new Tuple<Message.LEVEL,string>(Message.LEVEL.WARN, "Serious warning, be careful!"),
+                new Tuple<Message.LEVEL,string>(Message.LEVEL.ERROR, "Fatal error, its too late to be careful..."),
+                new Tuple<Message.LEVEL,string>(Message.LEVEL.SUCCESS, "Finally done with this demo!")
             };
 
             CoEx.WriteTitleLarge("Progress bar with status messages");
@@ -264,7 +264,7 @@ namespace Demo
             CoEx.WriteLine();
 
             // loop both exampledata arrays
-            foreach (var data in new String[][][] { exambledata, exambledatalong })
+            foreach (var data in new string[][][] { exambledata, exambledatalong })
             {
                 // print single row from one of the exampledata arrays
                 foreach (var row in data)
@@ -334,7 +334,7 @@ namespace Demo
             CoEx.WriteTitle("Colorize cells by conditions");
 
             // colorize column by index
-            rc1.Settings.Color = delegate (RowConf me, int colindex, String s)
+            rc1.Settings.Color = delegate (RowConf me, int colindex, string s)
             {
                 var temp = new ColorScheme(null, ConsoleColor.Blue);
                 switch (colindex)
@@ -349,7 +349,7 @@ namespace Demo
             };
 
             // Highlight padding every second column
-            rc1.Settings.IsHighlightPadding = delegate (RowConf me, int colindex, String s)
+            rc1.Settings.IsHighlightPadding = delegate (RowConf me, int colindex, string s)
             {
                 return (colindex % 2) == 0;
             };
@@ -359,10 +359,10 @@ namespace Demo
             CoEx.WriteTable(rc1);
 
             // if hours>10 is column 2 yellow and column 0 red
-            rc2.Settings.Color = delegate (RowConf me, int colindex, String s)
+            rc2.Settings.Color = delegate (RowConf me, int colindex, string s)
             {
                 double hours;
-                bool success = Double.TryParse(me.Data[2], out hours);
+                bool success = double.TryParse(me.Data[2], out hours);
 
                 if (colindex == 2 && success && hours >= 10)
                 {
@@ -379,7 +379,7 @@ namespace Demo
             };
 
             // highlight padding in column 0
-            rc2.Settings.IsHighlightPadding = delegate (RowConf me, int colindex, String s)
+            rc2.Settings.IsHighlightPadding = delegate (RowConf me, int colindex, string s)
             {
                 return (colindex == 0);
             };
@@ -392,7 +392,7 @@ namespace Demo
 
         protected static void DemoAlignment()
         {
-            rc2.Settings.Align = delegate (RowConf me, int colindex, String s)
+            rc2.Settings.Align = delegate (RowConf me, int colindex, string s)
             {
                 switch (colindex)
                 {

@@ -9,7 +9,7 @@ namespace PerrysNetConsole
     public class LoadAnimation
     {
 
-        public static String ANIMATIONCOMPLETE { get { return "OK"; } }
+        public static string ANIMATIONCOMPLETE { get { return "OK"; } }
         public static char[] ANIMATION { get { return new char[] { '-', '\\', '|', '/' }; } }
         
         protected int animationindex;

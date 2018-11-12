@@ -10,19 +10,19 @@ namespace PerrysNetConsole
     public class Prompt
     {
 
-        public static String DEFAULT_PREFIX = "Please enter";
-        public static String DEFAULT_ERRORMESSAGE = "No valid input";
+        public static string DEFAULT_PREFIX = "Please enter";
+        public static string DEFAULT_ERRORMESSAGE = "No valid input";
 
         public bool AllowEmpty { get; set; }
         public string Default { get; set; }
         public bool SingleCharacter { get; set; }
-        public String Prefix { get; set; }
-        public Dictionary<String, String> ChoicesText { get; set; }
+        public string Prefix { get; set; }
+        public Dictionary<string, string> ChoicesText { get; set; }
         public bool ValidateChoices { get; set; }
         public Regex ValidationRegex { get; set; }
-        public String ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; }
         
-        public String[] Choices
+        public string[] Choices
         {
             get
             {
@@ -55,7 +55,7 @@ namespace PerrysNetConsole
                 CoEx.WriteLine();
             }
 
-            if (this.AllowEmpty == false || !String.IsNullOrEmpty(input))
+            if (this.AllowEmpty == false || !string.IsNullOrEmpty(input))
             {
                 if (valid != false && this.ValidationRegex != null)
                 {
@@ -68,13 +68,13 @@ namespace PerrysNetConsole
                 }
             }
 
-            if (valid == false && !String.IsNullOrWhiteSpace(this.ErrorMessage))
+            if (valid == false && !string.IsNullOrWhiteSpace(this.ErrorMessage))
             {
                 CoEx.WriteLine(this.ErrorMessage);
             }
         }
 
-        public virtual String DoPrompt()
+        public virtual string DoPrompt()
         {
             bool valid = true;
             string temp = null;
@@ -94,17 +94,17 @@ namespace PerrysNetConsole
                     CoEx.WriteLine();
                 }
 
-                if (!String.IsNullOrWhiteSpace(this.Prefix))
+                if (!string.IsNullOrWhiteSpace(this.Prefix))
                 {
                     CoEx.Write(this.Prefix);
                 }
 
                 if (this.Choices != null && this.Choices.Length > 0)
                 {
-                    CoEx.Write(" (" + String.Join("/", this.Choices) + ")");
+                    CoEx.Write(" (" + string.Join("/", this.Choices) + ")");
                 }
 
-                if (!String.IsNullOrEmpty(this.Default))
+                if (!string.IsNullOrEmpty(this.Default))
                 {
                     CoEx.Write(" [" + this.Default + "]");
                 }
@@ -113,7 +113,7 @@ namespace PerrysNetConsole
 
                 temp = this.SingleCharacter ? CoEx.ReadKeyChar() : CoEx.ReadLine();
 
-                if (!String.IsNullOrEmpty(this.Default) && String.IsNullOrEmpty(temp))
+                if (!string.IsNullOrEmpty(this.Default) && string.IsNullOrEmpty(temp))
                 {
                     temp = this.Default;
                 }

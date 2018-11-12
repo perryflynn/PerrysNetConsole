@@ -10,21 +10,21 @@ namespace PerrysNetConsole
     public class LoadIndicator
     {
 
-        public static String DEFAULT_MESSAGE = "Please wait...";
+        public static string DEFAULT_MESSAGE = "Please wait...";
 
         public bool IsRunning { get; protected set; }
         protected volatile bool StopPending;
         protected Thread CurrentThread;
         protected LoadAnimation Animation = new LoadAnimation();
         public ColorScheme Color { get; set; }
-        public String Message { get; set; }
+        public string Message { get; set; }
 
         public LoadIndicator()
         {
             this.StopPending = false;
             this.IsRunning = false;
             this.CurrentThread = null;
-            this.Color = CoEx.COLORTITLE;
+            this.Color = CoEx.ColorTitlePrimary;
             this.Message = DEFAULT_MESSAGE;
         }
 
