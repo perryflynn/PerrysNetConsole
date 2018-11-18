@@ -4,31 +4,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-/**
-    Unsupported functions by unix systems:
-    https://github.com/dotnet/corefx/tree/master/src/System.Console/src/System
-
-    NumberLock
-    CapsLock
-    CursorSize.set
-    Title.get
-    Beep
-    BufferWidth.set
-    BufferHeight.set
-    SetBufferSize
-    WindowLeft.set
-    WindowTop.set
-    WindowWidth.set
-    WindowHeight.set
-    SetWindowPosition
-    SetWindowSize
-    CursorVisible.get
-    MoveBufferArea
-    MoveBufferArea
-
-    Handling of unknown colors in unix terminals:
-    ConsoleColor UnknownColor = (ConsoleColor)(-1);
-*/
 
 namespace PerrysNetConsole
 {
@@ -38,6 +13,33 @@ namespace PerrysNetConsole
 
     public static class CoEx
     {
+
+        /**
+            Unsupported functions by unix systems:
+            https://github.com/dotnet/corefx/tree/master/src/System.Console/src/System
+
+            NumberLock
+            CapsLock
+            CursorSize.set
+            Title.get
+            Beep
+            BufferWidth.set
+            BufferHeight.set
+            SetBufferSize
+            WindowLeft.set
+            WindowTop.set
+            WindowWidth.set
+            WindowHeight.set
+            SetWindowPosition
+            SetWindowSize
+            CursorVisible.get
+            MoveBufferArea
+            MoveBufferArea
+
+            Handling of unknown colors in unix terminals:
+            ConsoleColor UnknownColor = (ConsoleColor)(-1);
+        */
+
 
         //--> Defaults
 
@@ -124,7 +126,7 @@ namespace PerrysNetConsole
         /// <summary>
         /// Default ColorScheme for a table column header
         /// </summary>
-        public static ColorScheme ColorTableHeading { get; set; } = new ColorScheme(ConsoleColor.Green, ConsoleColor.Blue);
+        public static ColorScheme ColorTableHeading { get; set; } = new ColorScheme(ConsoleColor.DarkGreen, ConsoleColor.White);
 
         /// <summary>
         /// Default ColorScheme for a primary title
@@ -147,7 +149,7 @@ namespace PerrysNetConsole
         /// <summary>
         /// Current buffer width without padding
         /// </summary>
-        public static int Width { get { return BufferWidth - BufferPadding; } }
+        public static int Width { get { return IsBufferWidthForced ? BufferWidth : (BufferWidth - BufferPadding); } }
 
         /// <summary>
         /// Current Buffer height
@@ -172,6 +174,11 @@ namespace PerrysNetConsole
             set { Console.CursorTop = value; }
         }
 
+        /// <summary>
+        /// On some operating systems the CursorVisible
+        /// property is only writable, but not readable.
+        /// Just save the last state.
+        /// </summary>
         private static bool _cursorvisible;
 
         /// <summary>
@@ -184,12 +191,22 @@ namespace PerrysNetConsole
         }
 
         /// <summary>
+        /// Force a custom buffer width
+        /// </summary>
+        public static int? ForcedBufferWidth { get; set; } = null;
+
+        /// <summary>
+        /// Checks the buffer width is forced
+        /// </summary>
+        public static bool IsBufferWidthForced { get { return ForcedBufferWidth.HasValue; } }
+
+        /// <summary>
         /// Console Buffer width
         /// </summary>
         /// <exception cref="System.PlatformNotSupportedException">Setter not supported on some systems</exception>
         public static int BufferWidth
         {
-            get { return Console.BufferWidth; }
+            get { return ForcedBufferWidth ?? Console.BufferWidth; }
             set { Console.BufferWidth = value; }
         }
 
@@ -286,6 +303,12 @@ namespace PerrysNetConsole
             CursorVisible = true;
         }
 
+        /// <summary>
+        /// Try to execute a method and cast a PlatformNotSupportedException
+        /// into a bool return value
+        /// </summary>
+        /// <param name="action">was it successfull?</param>
+        /// <returns></returns>
         private static bool TryPlatform(Action action)
         {
             try
@@ -299,6 +322,12 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Try to execute a async method and cast a PlatformNotSupportedException
+        /// into a bool return value
+        /// </summary>
+        /// <param name="action">was it successfull?</param>
+        /// <returns></returns>
         private static async Task<bool> TryPlatformAsync(Func<Task> action)
         {
             try
@@ -312,16 +341,30 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Clear the console window
+        /// </summary>
         public static void Clear()
         {
             Console.Clear();
         }
 
+        /// <summary>
+        /// Navigate to a xy position inside the buffer
+        /// </summary>
+        /// <param name="x">horizontal position</param>
+        /// <param name="y">vertical position</param>
         public static void Seek(int? x, int? y)
         {
             Seek(x, y, false);
         }
 
+        /// <summary>
+        /// Navigate to a xy position inside the buffer
+        /// </summary>
+        /// <param name="x">horizontal position</param>
+        /// <param name="y">vertical position</param>
+        /// <param name="clear">clear the passed lines</param>
         public static void Seek(int? x, int? y, bool clear)
         {
             if (x.HasValue == false)
@@ -377,11 +420,19 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Go to the top of the buffer
+        /// </summary>
         public static void GoUp()
         {
             Seek(0, -1);
         }
 
+        /// <summary>
+        /// Scroll the display viewport to a specific position of the buffer
+        /// </summary>
+        /// <param name="x">horizontal position</param>
+        /// <param name="y">vertical position</param>
         public static void Scroll(int x, int y)
         {
             if (x < 0)
@@ -418,23 +469,49 @@ namespace PerrysNetConsole
             BufferViewportY = y;
         }
 
+        /// <summary>
+        /// Scrolling is not supported on all platforms.
+        /// Try it and return the result.
+        /// </summary>
+        /// <param name="x">horizontal position</param>
+        /// <param name="y">vertical position</param>
+        /// <returns>was the scrolling attempt successful?</returns>
         public static bool TryScroll(int x, int y)
         {
             return TryPlatform(() => { Scroll(x, y); });
         }
 
+        /// <summary>
+        /// Scroll after wait ms
+        /// </summary>
+        /// <param name="x">hotizontal position</param>
+        /// <param name="y">vertical position</param>
+        /// <param name="delayms">wait for milliseconds</param>
+        /// <returns>The wait task</returns>
         public static async Task ScrollAsync(int x, int y, int delayms)
         {
             await Task.Delay(delayms);
             Scroll(x, y);
         }
 
+        /// <summary>
+        /// Scrolling is not supported on all platforms.
+        /// Try it and return the result.
+        /// </summary>
+        /// <param name="x">hotizontal position</param>
+        /// <param name="y">vertical position</param>
+        /// <param name="delayms">wait for milliseconds</param>
+        /// <returns>The wait task</returns>
         public static async Task<bool> TryScrollAsync(int x, int y, int delayms)
         {
             Thread.Sleep(delayms);
             return await TryPlatformAsync(async () => { await ScrollAsync(x, y, delayms); });
         }
 
+        /// <summary>
+        /// Reset the colors to default
+        /// </summary>
+        /// <param name="supressevent">should this action suppressed for the events?</param>
         public static void ResetColor(bool supressevent)
         {
             Console.ResetColor();
@@ -444,17 +521,29 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Reset the colors to default
+        /// </summary>
         public static void ResetColor()
         {
             ResetColor(false);
         }
 
+        /// <summary>
+        /// Set a color scheme
+        /// </summary>
+        /// <param name="scheme">Foreground and background color as a ColorScheme instance</param>
         public static void SetColor(ColorScheme scheme)
         {
             scheme = scheme ?? new ColorScheme();
             SetColor(scheme.Background, scheme.Foreground);
         }
 
+        /// <summary>
+        /// Set foreground- and background color
+        /// </summary>
+        /// <param name="bg">background color</param>
+        /// <param name="fg">foreground color</param>
         public static void SetColor(ConsoleColor? bg, ConsoleColor? fg)
         {
             ResetColor(true);
@@ -470,6 +559,12 @@ namespace PerrysNetConsole
             OnColorChange?.Invoke(CurrentColorScheme);
         }
 
+        /// <summary>
+        /// Set the colors from a rowconf color delegate
+        /// </summary>
+        /// <param name="cfg">RowConf instance</param>
+        /// <param name="column">column index</param>
+        /// <param name="content">text that should be written</param>
         public static void SetColor(RowConf cfg, int column, string content)
         {
             if (cfg.IsColorize == null || cfg.IsColorize(cfg, column, content))
@@ -479,6 +574,10 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Read a line of text and return it as a string
+        /// </summary>
+        /// <returns>The string</returns>
         public static string ReadLine()
         {
             var temp = Console.ReadLine();
@@ -486,11 +585,20 @@ namespace PerrysNetConsole
             return temp;
         }
 
+        /// <summary>
+        /// Read a single character and return it as a string
+        /// </summary>
+        /// <returns>The charachter as string</returns>
         public static string ReadKeyChar()
         {
             return Console.ReadKey().KeyChar.ToString().Trim();
         }
 
+        /// <summary>
+        /// Set the console window size
+        /// </summary>
+        /// <param name="width">the width</param>
+        /// <param name="height">the height</param>
         public static void SetWindowSize(int? width, int? height)
         {
             if (width.HasValue)
@@ -503,11 +611,23 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Changing the window size is not supported on all platforms.
+        /// Try it and return if successful.
+        /// </summary>
+        /// <param name="width">the width</param>
+        /// <param name="height">the height</param>
+        /// <returns>was the change of the window size successful?</returns>
         public static bool TrySetWindowSize(int? width, int? height)
         {
             return TryPlatform(() => { SetWindowSize(width, height); });
         }
 
+        /// <summary>
+        /// Change the console buffer size
+        /// </summary>
+        /// <param name="width">the width</param>
+        /// <param name="height">the height</param>
         public static void SetBufferSize(int? width, int? height)
         {
             if (width.HasValue)
@@ -520,11 +640,23 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Changing the buffer size is not supported on all platforms.
+        /// Try it and return the result.
+        /// </summary>
+        /// <param name="width">the width</param>
+        /// <param name="height">the height</param>
+        /// <returns>Was changing the buffer size successful?</returns>
         public static bool TrySetBufferSize(int? width, int? height)
         {
             return TryPlatform(() => { SetBufferSize(width, height); });
         }
 
+        /// <summary>
+        /// Jump with the buffern viewport to the specified position
+        /// </summary>
+        /// <param name="x">the horizontal position</param>
+        /// <param name="y">the vertical position</param>
         public static void SetBufferViewport(int? x, int? y)
         {
             if (x.HasValue)
@@ -537,11 +669,23 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Change the buffer viewport is not supported on all platforms.
+        /// Try it and return the result.
+        /// </summary>
+        /// <param name="x">The horizontal position</param>
+        /// <param name="y">The vertical position</param>
+        /// <returns>Was the change of the buffer viewport position successful?</returns>
         public static bool TrySetBufferViewport(int? x, int? y)
         {
             return TryPlatform(() => { SetBufferViewport(x, y); });
         }
 
+        /// <summary>
+        /// Ask for confirmation
+        /// </summary>
+        /// <param name="msg">Displayed message</param>
+        /// <returns>The result</returns>
         public static bool Confirm(string msg)
         {
             Write("{0} (Enter) ", msg);
@@ -549,6 +693,10 @@ namespace PerrysNetConsole
             return (res == "");
         }
 
+        /// <summary>
+        /// Shows a "press any key" message
+        /// </summary>
+        /// <param name="message">the displayed message</param>
         public static void PressAnyKey(string message)
         {
             Write(message + " ");
@@ -556,11 +704,19 @@ namespace PerrysNetConsole
             WriteLine();
         }
 
+        /// <summary>
+        /// Shows the default "press any key" message
+        /// </summary>
         public static void PressAnyKey()
         {
             PressAnyKey(PressAnyKeyDefaultText);
         }
 
+        /// <summary>
+        /// Shows a countdown
+        /// </summary>
+        /// <param name="message">displayed message</param>
+        /// <param name="seconds">countdown time in seconds</param>
         public static void Timeout(string message, int seconds)
         {
             CursorVisible = false;
@@ -574,16 +730,21 @@ namespace PerrysNetConsole
             CursorVisible = true;
         }
 
+        /// <summary>
+        /// Shows the default countdown message
+        /// </summary>
+        /// <param name="seconds">countdown time in seconds</param>
         public static void Timeout(int seconds)
         {
             Timeout(TimeoutDefaultText, seconds);
         }
 
-        public static void Timeout()
-        {
-            Timeout(TimeoutDefaultText, 5);
-        }
-
+        /// <summary>
+        /// Write a string with specified colors
+        /// </summary>
+        /// <param name="str">the string</param>
+        /// <param name="background">background color</param>
+        /// <param name="foreground">foreground color</param>
         public static void Write(string str, ConsoleColor? background, ConsoleColor? foreground)
         {
             if (foreground.HasValue || background.HasValue)
@@ -602,75 +763,147 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Write a string with the specified color scheme
+        /// </summary>
+        /// <param name="str">the string</param>
+        /// <param name="color">the color scheme instance</param>
         public static void Write(string str, ColorScheme color)
         {
             Write(str, color.Background, color.Foreground);
         }
 
+        /// <summary>
+        /// Write a string
+        /// </summary>
+        /// <param name="str">the string</param>
         public static void Write(string str)
         {
             Write(str, new ColorScheme(null, null));
         }
 
+        /// <summary>
+        /// Write multiple strings
+        /// </summary>
+        /// <param name="strings">the strings</param>
         public static void Write(string[] strings)
         {
             strings.ToList().ForEach(v => Write(v));
         }
 
+        /// <summary>
+        /// Write a string and begin a new line
+        /// </summary>
+        /// <param name="str">the string</param>
         public static void WriteLine(string str)
         {
             Write(str + Environment.NewLine);
         }
 
+        /// <summary>
+        /// Write a string with specified colors and begin a new line
+        /// </summary>
+        /// <param name="str">the string</param>
+        /// <param name="background">background color</param>
+        /// <param name="foreground">foreground color</param>
         public static void WriteLine(string str, ConsoleColor? background, ConsoleColor? foreground)
         {
             Write(str + Environment.NewLine, background, foreground);
         }
 
+        /// <summary>
+        /// Write a string with the specified colorscheme and begin a new line
+        /// </summary>
+        /// <param name="str">the string</param>
+        /// <param name="color">the colorscheme instance</param>
         public static void WriteLine(string str, ColorScheme color)
         {
             WriteLine(str, color.Background, color.Foreground);
         }
 
+        /// <summary>
+        /// Write multiple lines
+        /// </summary>
+        /// <param name="strings">lines</param>
         public static void WriteLine(string[] strings)
         {
             strings.ToList().ForEach(v => WriteLine(v));
         }
 
+        /// <summary>
+        /// Write a formatted string
+        /// </summary>
+        /// <param name="format">the string format</param>
+        /// <param name="background">background color</param>
+        /// <param name="foreground">foreground color</param>
+        /// <param name="args">the format arguments</param>
         public static void Write(string format, ConsoleColor? background, ConsoleColor? foreground, params object[] args)
         {
             Write(string.Format(format, args), background, foreground);
         }
 
+        /// <summary>
+        /// Write a formatted string
+        /// </summary>
+        /// <param name="format">the string format</param>
+        /// <param name="color">a colorscheme instance</param>
+        /// <param name="args">the format arguments</param>
         public static void Write(string format, ColorScheme color, params object[] args)
         {
             Write(format, color.Background, color.Foreground, args);
         }
 
+        /// <summary>
+        /// Write a formatted string
+        /// </summary>
+        /// <param name="format">the string format</param>
+        /// <param name="args">the format arguments</param>
         public static void Write(string format, params object[] args)
         {
             Write(string.Format(format, args));
         }
 
+        /// <summary>
+        /// Write a formatted line
+        /// </summary>
+        /// <param name="format">the string format</param>
+        /// <param name="args">the format arguments</param>
         public static void WriteLine(string format, params object[] args)
         {
             WriteLine(string.Format(format, args));
         }
 
+        /// <summary>
+        /// Write a formatted line
+        /// </summary>
+        /// <param name="format">the string format</param>
+        /// <param name="background">background color</param>
+        /// <param name="foreground">foreground color</param>
+        /// <param name="args">the format arguments</param>
         public static void WriteLine(string format, ConsoleColor? background, ConsoleColor? foreground, params object[] args)
         {
             WriteLine(string.Format(format, args), background, foreground);
         }
 
+        /// <summary>
+        /// Write a formatted line
+        /// </summary>
+        /// <param name="format">the string format</param>
+        /// <param name="color">a colorscheme instance</param>
+        /// <param name="args">the format arguments</param>
         public static void WriteLine(string format, ColorScheme color, params object[] args)
         {
             WriteLine(format, color.Background, color.Foreground, args);
         }
 
+        /// <summary>
+        /// Write a empty line
+        /// </summary>
         public static void WriteLine()
         {
             WriteLine("");
         }
+
 
         public static void WriteBorderRow(BorderConf bconf, LengthCollection lconf)
         {
@@ -687,7 +920,11 @@ namespace PerrysNetConsole
             WriteLine();
         }
 
-        public static void WriteColumnsColored(RowConf cfg)
+        /// <summary>
+        /// Write columns based on a RowConf instance
+        /// </summary>
+        /// <param name="cfg">the rowconf</param>
+        public static void WriteColumns(RowConf cfg)
         {
             // Build column wrapping
             string[][] sublines = cfg.WordwrappedData;
@@ -758,6 +995,10 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Write a table
+        /// </summary>
+        /// <param name="rows">the rowcollection</param>
         public static void WriteTable(RowCollection rows)
         {
             int i = 0;
@@ -767,7 +1008,7 @@ namespace PerrysNetConsole
                 {
                     WriteBorderRow(item.Border, item.RealLength);
                 }
-                WriteColumnsColored(item);
+                WriteColumns(item);
                 i++;
             }
 
@@ -777,54 +1018,99 @@ namespace PerrysNetConsole
             }
         }
 
+        /// <summary>
+        /// Write columns
+        /// </summary>
+        /// <param name="s">the column contents</param>
         public static void WriteColumns(params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(s).SetHlPadding(false));
+            WriteColumns(RowConf.Create(s).SetHlPadding(false));
         }
 
+        /// <summary>
+        /// Write columns
+        /// </summary>
+        /// <param name="length">The length for each columns</param>
+        /// <param name="s">The column contents</param>
         public static void WriteColumns(LengthCollection length, params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(length, s));
+            WriteColumns(RowConf.Create(length, s));
         }
 
+        /// <summary>
+        /// Write columns with the header color scheme
+        /// </summary>
+        /// <param name="s">the column contents</param>
         public static void WriteTH(params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(s).PresetTH());
+            WriteColumns(RowConf.Create(s).PresetTH());
         }
 
+        /// <summary>
+        /// Write columns with the header color scheme
+        /// </summary>
+        /// <param name="length">The length for each columns</param>
+        /// <param name="s">The column contents</param>
         public static void WriteTH(LengthCollection length, params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(length, s).PresetTH());
+            WriteColumns(RowConf.Create(length, s).PresetTH());
         }
 
+        /// <summary>
+        /// Write columns with the highlight color scheme
+        /// </summary>
+        /// <param name="s">the column contents</param>
         public static void WriteHl(params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(s).PresetHL());
+            WriteColumns(RowConf.Create(s).PresetHL());
         }
 
+        /// <summary>
+        /// Write columns with the highlight color scheme
+        /// </summary>
+        /// <param name="length">The length for each columns</param>
+        /// <param name="s">The column contents</param>
         public static void WriteHl(LengthCollection length, params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(length, s).PresetHL());
+            WriteColumns(RowConf.Create(length, s).PresetHL());
         }
 
+        /// <summary>
+        /// Write columns with the title color scheme
+        /// </summary>
+        /// <param name="s">the column contents</param>
         public static void WriteTitle(params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(s).PresetTitle().SetBordered(false));
+            WriteColumns(RowConf.Create(s).PresetTitle().SetBordered(false));
         }
 
+        /// <summary>
+        /// Write columns with the title color scheme
+        /// </summary>
+        /// <param name="length">The length for each columns</param>
+        /// <param name="s">The column contents</param>
         public static void WriteTitle(LengthCollection length, string[] s)
         {
-            WriteColumnsColored(RowConf.Create(length, s).PresetTitle().SetBordered(false));
+            WriteColumns(RowConf.Create(length, s).PresetTitle().SetBordered(false));
         }
 
+        /// <summary>
+        /// Write columns with the title color scheme on full width
+        /// </summary>
+        /// <param name="s">the column contents</param>
         public static void WriteTitleLarge(params string[] s)
         {
-            WriteColumnsColored(RowConf.Create(s).PresetTitle().SetBordered(false).SetAlignment(RowConf.ALIGNCENTER).SetHlPadding(true));
+            WriteColumns(RowConf.Create(s).PresetTitle().SetBordered(false).SetAlignment(RowConf.ALIGNCENTER).SetHlPadding(true));
         }
 
+        /// <summary>
+        /// Write columns with the title color scheme on full width
+        /// </summary>
+        /// <param name="length">The length for each columns</param>
+        /// <param name="s">The column contents</param>
         public static void WriteTitleLarge(LengthCollection length, string[] s)
         {
-            WriteColumnsColored(RowConf.Create(length, s).PresetTitle().SetBordered(false).SetAlignment(RowConf.ALIGNCENTER).SetHlPadding(true));
+            WriteColumns(RowConf.Create(length, s).PresetTitle().SetBordered(false).SetAlignment(RowConf.ALIGNCENTER).SetHlPadding(true));
         }
 
     }

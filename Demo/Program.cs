@@ -130,7 +130,7 @@ namespace Demo
                 if (istitle) { temp = temp.Substring(1); }
                 var row = RowConf.Create(new string[] { temp }).SetAlignment(RowConf.ALIGNCENTER);
                 if (istitle) { row = row.PresetTitle(); }
-                CoEx.WriteColumnsColored(row);
+                CoEx.WriteColumns(row);
             }
 
             int length = (int)(CoEx.RealCursorY - pos);

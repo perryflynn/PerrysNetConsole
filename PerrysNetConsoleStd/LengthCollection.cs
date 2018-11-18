@@ -70,6 +70,12 @@ namespace PerrysNetConsole
                 int j = 0;
                 LengthCollection blen = this.Clone();
 
+                if(blen.Items.Count <= 1)
+                {
+                    // Return full length if there is only one item in the collection
+                    return blen;
+                }
+
                 double total = (this.Count * CoEx.ColumnPadding);
 
                 // get space for paddings by unsused characters
