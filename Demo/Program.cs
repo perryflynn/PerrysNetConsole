@@ -433,6 +433,27 @@ namespace Demo
             rc2 = RowCollection.Create(exambledatalong);
 
 
+            CoEx.WriteLine("Here");
+            CoEx.WriteLine("are");
+            CoEx.WriteLine("some");
+            CoEx.WriteLine("lines");
+            CoEx.WriteLine();
+
+            var pbar = new Progress();
+            pbar.Start();
+
+            System.Threading.Thread.Sleep(2000);
+            pbar.Update(50);
+
+            System.Threading.Thread.Sleep(2000);
+            pbar.Dispose();
+
+            CoEx.WriteLine("Progressbar cleared.");
+
+            CoEx.PressAnyKey();
+
+
+
             /**
              * Demo parts
              */

@@ -211,7 +211,14 @@ namespace PerrysNetConsole
         /// </summary>
         protected void Clear()
         {
-            CoEx.Seek(0, (int)(this.StartY - CoEx.RealCursorY), true);
+            if (this.StartY < CoEx.RealCursorY)
+            {
+                CoEx.Seek(0, (int)(this.StartY - CoEx.RealCursorY), true);
+            }
+            else
+            {
+                CoEx.Seek(0, null, true);
+            }
         }
 
         /// <summary>
