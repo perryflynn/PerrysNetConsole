@@ -3,6 +3,9 @@ A collection of C# classes to create fancy console applications.
 - Prompt / Multiple Choice Prompt
 - Progressbar / Progressbar with status messages
 - Loading indicator
+- Graph
+- Timeout counter
+- Scrolltext (works only on windows)
 - Grid system for text output
 - Automatic text wrapping inside of grid columns
 - Tables
@@ -11,11 +14,14 @@ A collection of C# classes to create fancy console applications.
 
 ## Install with nuget
 
+- Full .NET standard support
+- Workarounds for operating system specific functions
+
 ```
 Install-Package PerrysNetConsole
 ```
 
-[nuget package site](https://www.nuget.org/packages/PerrysNetConsole/1.0.0)
+[nuget package site](https://www.nuget.org/packages/PerrysNetConsole)
 
 ## Demo
 

@@ -2,16 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.1-alpha</Version>
+    <Version>2.1.1</Version>
     <Authors>Christian Blechert</Authors>
     <PackageId>PerrysNetConsole</PackageId>
     <Product>PerrysNetConsole</Product>
-    <PackageLicenseUrl>https://github.com/perryflynn/PerrysNetConsole/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/perryflynn/PerrysNetConsole</PackageProjectUrl>
     <Description>Graphical Controls for .NET console applications</Description>
-    <Copyright>Copyright 2018</Copyright>
-    <PackageTags>c# .net console progressbar locadindicator prompt table</PackageTags>
+    <Copyright>Copyright 2019</Copyright>
+    <PackageTags>c# .net console progressbar locadindicator prompt table graph</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>
