@@ -413,6 +413,26 @@ namespace Demo
         }
 
 
+        public static void DemoGraph()
+        {
+            CoEx.WriteTitleLarge("Simple Graph");
+            CoEx.WriteLine();
+
+            var graph = new SimpleGraph()
+            {
+                Height = 10
+            };
+
+            var list = new List<double>() { 2, 1, 8, 16, 42, 0, 50, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 0, 10, 20, 30, 40, 50, 40, 30, 20, 10 };
+
+            var i = 0;
+            var temp = DateTime.Now.Date;
+            var dateList = list.ToDictionary(key => temp.AddDays(i++).ToString("ddMMM"), value => value);
+
+            graph.Draw(dateList /*.Select(v => v * 42).ToList()*/ /*.OrderBy(v => v).ToList()*/);
+        }
+
+
         static void Main(string[] args)
         {
             /**
@@ -437,6 +457,10 @@ namespace Demo
              * Demo parts
              */
             DemoLoadIndicator();
+            CoEx.Clear();
+
+            DemoGraph();
+            Continue();
             CoEx.Clear();
 
             DemoProgressBar();
