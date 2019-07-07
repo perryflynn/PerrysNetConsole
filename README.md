@@ -26,7 +26,7 @@ dotnet add package PerrysNetConsole --version 2.1.0
 
 ## Demo
 
-![Demo image](./doc/Demo-2019-07-07 17-31.gif)
+![Demo image](./doc/Demo-2019-07-07-17-31.gif)
 
 ## Demo Application
 
