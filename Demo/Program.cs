@@ -456,6 +456,8 @@ namespace Demo
             /**
              * Demo parts
              */
+            Continue();
+
             DemoLoadIndicator();
             CoEx.Clear();
 

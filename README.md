@@ -18,14 +18,15 @@ A collection of C# classes to create fancy console applications.
 - Workarounds for operating system specific functions
 
 ```
-Install-Package PerrysNetConsole
+Install-Package PerrysNetConsole -Version 2.1.0
+dotnet add package PerrysNetConsole --version 2.1.0
 ```
 
 [nuget package site](https://www.nuget.org/packages/PerrysNetConsole)
 
 ## Demo
 
-![Demo image](./doc/Demo-2017-09-18%2019-56.gif)
+![Demo image](./doc/Demo-2019-07-07 17-31.gif)
 
 ## Demo Application
 
