@@ -12,6 +12,11 @@ A collection of C# classes to create fancy console applications.
 - Bordered tables
 - Dynamic coloring and alignment with delegates
 
+## Extensions
+
+- [PerrysNetConsoleHtml](https://github.com/perryflynn/PerrysNetConsoleHtml):
+  Exports console output into a HTML file
+
 ## Install with nuget
 
 - Full .NET standard support
